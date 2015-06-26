@@ -10,8 +10,8 @@
 // @include        http://www.geocaching.com/my/recentlyviewedcaches*
 // @include        http://www.geocaching.com/seek/nearest*
 // @icon           http://send2.cgeo.org/content/images/logo.png
-// @downloadURL    https://send2.cgeo.org/send2cgeo.user.js
-// @updateURL      https://send2.cgeo.org/send2cgeo.user.js
+// @downloadURL    https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
+// @updateURL      https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
 // @version        0.31
 // ==/UserScript==
 
