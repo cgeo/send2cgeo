@@ -3,15 +3,16 @@
 // @namespace      http://send2.cgeo.org/
 // @description    Add button "Send to c:geo" to geocaching.com
 // @grant          none
+// @include        https://www.geocaching.com/play/search/*
 // @include        http://www.geocaching.com/seek/cache_details*
 // @include        https://www.geocaching.com/map/*
 // @include        http://www.geocaching.com/geocache/*
 // @include        http://www.geocaching.com/my/recentlyviewedcaches*
 // @include        http://www.geocaching.com/seek/nearest*
-// @icon           http://send2.cgeo.org/content/images/logo.png
-// @downloadURL    https://send2.cgeo.org/send2cgeo.user.js
-// @updateURL      https://send2.cgeo.org/send2cgeo.user.js
-// @version        0.30
+// @icon           https://send2.cgeo.org/send2cgeo.png
+// @downloadURL    https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
+// @updateURL      https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
+// @version        0.32
 // ==/UserScript==
 
 // Inserts javascript that will be called by the s2cgeo button. The closure
@@ -74,7 +75,30 @@ s.textContent =  '(' + function() {
              + '<span>Send to c:geo</span>';
 
     map.innerHTML = map.innerHTML.replace('Log Visit</span>', html);
-  } else if(document.getElementById('ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode') != null){
+  } else if(document.getElementById('searchResultsTable') != null){
+    // geocaching.com new search
+    
+    $("#searchResultsTable th").first().after('<th class="mobile-show"><a class="outbound-link">Send to c:geo</a></th>');
+    $("#searchResultsTable col").first().after('<col></col>');
+    
+    var caches = $(".cache-details");
+    caches.each(function() {
+        
+        var GCCode = $(this ).text();
+        GCCode = GCCode.slice( GCCode.indexOf("|") + 1 ).trim();
+        
+        var html = '<td class="mobile-show" >'
+             + '<a href="https://send2.cgeo.org/add.html?cache=' + GCCode + '" '
+             + 'onclick="window.s2geo(\'' + GCCode + '\'); return false;">'
+             + '<img height="50" src="https://send2.cgeo.org/send2cgeo.png" '
+             + 'border="0"> '
+             + '</a></td>';
+
+             $(this).parent().parent().after(html);
+             
+    });
+    
+    } else if(document.getElementById('ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode') != null){
     // geocaching.com cache detail page
     var GCCode = $('#ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode')
                   .html();
