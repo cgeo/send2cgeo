@@ -5,10 +5,14 @@
 // @grant          none
 // @include        https://www.geocaching.com/play/search/*
 // @include        http://www.geocaching.com/seek/cache_details*
+// @include        https://www.geocaching.com/seek/cache_details*
 // @include        https://www.geocaching.com/map/*
 // @include        http://www.geocaching.com/geocache/*
+// @include        https://www.geocaching.com/geocache/*
 // @include        http://www.geocaching.com/my/recentlyviewedcaches*
+// @include        https://www.geocaching.com/my/recentlyviewedcaches*
 // @include        http://www.geocaching.com/seek/nearest*
+// @include        https://www.geocaching.com/seek/nearest*
 // @icon           https://send2.cgeo.org/send2cgeo.png
 // @downloadURL    https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
 // @updateURL      https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
