@@ -98,7 +98,7 @@ s.textContent =  '(' + function() {
              + 'border="0"> '
              + '</a></td>';
 
-             $(this).parent().parent().after(html);
+             $(this).parent().parent().before(html);
              
     });
     
