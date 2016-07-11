@@ -81,16 +81,16 @@ s.textContent =  '(' + function() {
     map.innerHTML = map.innerHTML.replace('Log Visit</span>', html);
   } else if(document.getElementById('searchResultsTable') != null){
     // geocaching.com new search
-    
+
     $("#searchResultsTable th").first().after('<th class="mobile-show"><a class="outbound-link">Send to c:geo</a></th>');
     $("#searchResultsTable col").first().after('<col></col>');
-    
+
     var caches = $(".cache-details");
     caches.each(function() {
-        
+
         var GCCode = $(this ).text();
         GCCode = GCCode.slice( GCCode.indexOf("|") + 1 ).trim();
-        
+
         var html = '<td class="mobile-show" >'
              + '<a href="https://send2.cgeo.org/add.html?cache=' + GCCode + '" '
              + 'onclick="window.s2geo(\'' + GCCode + '\'); return false;">'
@@ -98,10 +98,10 @@ s.textContent =  '(' + function() {
              + 'border="0"> '
              + '</a></td>';
 
-             $(this).parent().parent().before(html);
-             
+             $(this).parent().parent().after(html);
+
     });
-    
+
     } else if(document.getElementById('ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode') != null){
     // geocaching.com cache detail page
     var GCCode = $('#ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode')
@@ -126,7 +126,7 @@ s.textContent =  '(' + function() {
       this.href="javascript:window.s2geo('"+GCCode+"')";
       this.title = "Send to c:geo";
     });
-    
+
   }
 } + ')();';
 
