@@ -1,10 +1,12 @@
 // ==UserScript==
-// @name Send to c:geo for opencaching
-// @namespace http://send2.cgeo.org/
-// @description Add button "Send to c:geo" to opencaching.de
-// @include http://www.opencaching.de/viewcache.php*
-// @icon http://send2.cgeo.org/content/images/logo.png
-// @version 0.3
+// @name           Send to c:geo for opencaching.de
+// @namespace      http://send2.cgeo.org/
+// @description    Add button "Send to c:geo" to opencaching.de
+// @author         c:geo team and contributors
+// @grant          none
+// @include        http://www.opencaching.de/viewcache.php*
+// @icon           https://send2.cgeo.org/send2cgeo.png
+// @version        0.4
 // ==/UserScript==
 
 // Inserts javascript that will be called by the s2cgeo button. The closure
