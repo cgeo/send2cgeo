@@ -18,7 +18,7 @@
 // @downloadURL    https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
 // @updateURL      https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
 // @supportURL     https://github.com/cgeo/send2cgeo/issues
-// @version        0.35
+// @version        0.36
 // ==/UserScript==
 
 // Inserts javascript that will be called by the s2cgeo button. The closure
@@ -100,7 +100,7 @@ s.textContent =  '(' + function() {
              + 'border="0"> '
              + '</a></td>';
 
-             $(this).parent().parent().after(html);
+             $(this).parent().parent().before(html);
 
     });
 
