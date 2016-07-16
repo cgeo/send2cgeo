@@ -2,6 +2,7 @@
 // @name           Send to c:geo
 // @namespace      http://send2.cgeo.org/
 // @description    Add button "Send to c:geo" to geocaching.com
+// @author         c:geo team and contributors
 // @grant          none
 // @include        https://www.geocaching.com/play/search/*
 // @include        http://www.geocaching.com/seek/cache_details*
@@ -16,7 +17,8 @@
 // @icon           https://send2.cgeo.org/send2cgeo.png
 // @downloadURL    https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
 // @updateURL      https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
-// @version        0.34
+// @supportURL     https://github.com/cgeo/send2cgeo/issues
+// @version        0.35
 // ==/UserScript==
 
 // Inserts javascript that will be called by the s2cgeo button. The closure
