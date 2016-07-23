@@ -18,7 +18,7 @@
 // @downloadURL    https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
 // @updateURL      https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
 // @supportURL     https://github.com/cgeo/send2cgeo/issues
-// @version        0.36
+// @version        0.37
 // ==/UserScript==
 
 // Inserts javascript that will be called by the s2cgeo button. The closure
