@@ -18,7 +18,7 @@
 // @downloadURL    https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
 // @updateURL      https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
 // @supportURL     https://github.com/cgeo/send2cgeo/issues
-// @version        0.36
+// @version        0.37
 // ==/UserScript==
 
 // Inserts javascript that will be called by the s2cgeo button. The closure
@@ -47,6 +47,82 @@ s.textContent =  '(' + function() {
       });
   };
 
+  // this adds a column with send2cgeo button in search results table
+  function addSend2cgeoColumn(field) {
+        var GCCode = $(field).text();
+        GCCode = GCCode.slice( GCCode.indexOf("|") + 1 ).trim();
+        
+        var html = '<td class="mobile-show" >'
+             + '<a href="https://send2.cgeo.org/add.html?cache=' + GCCode + '" '
+             + 'onclick="window.s2geo(\'' + GCCode + '\'); return false;">'
+             + '<img height="50" src="https://send2.cgeo.org/send2cgeo.png" '
+             + 'border="0"> '
+             + '</a></td>';
+
+             $(field).parent().parent().before(html);
+  }
+
+  // waits for new elements (by ajax calls) injected into the DOM and calls a certain 
+  // method for certain elements
+  // (here: used in search results - these are loaded lazyly when scrolling down)
+  window.waitForKeyElements = function(selectorTxt, actionFunction, bWaitOnce, iframeSelector) {
+    var targetNodes, btargetsFound;
+
+    if (typeof iframeSelector == "undefined")
+        targetNodes = $(selectorTxt);
+    else
+        targetNodes = $(iframeSelector).contents().find (selectorTxt);
+
+    if (targetNodes  &&  targetNodes.length > 0) {
+        btargetsFound   = true;
+        /*--- Found target node(s).  Go through each and act if they
+            are new.
+        */
+        targetNodes.each ( function () {
+            var jThis        = $(this);
+            var alreadyFound = jThis.data ('alreadyFound')  ||  false;
+
+            if (!alreadyFound) {
+                //--- Call the payload function.
+                var cancelFound     = actionFunction (jThis);
+                if (cancelFound)
+                    btargetsFound   = false;
+                else
+                    jThis.data ('alreadyFound', true);
+            }
+        } );
+    }
+    else {
+        btargetsFound   = false;
+    }
+
+    //--- Get the timer-control variable for this selector.
+    var controlObj      = waitForKeyElements.controlObj  ||  {};
+    var controlKey      = selectorTxt.replace (/[^\w]/g, "_");
+    var timeControl     = controlObj [controlKey];
+
+    //--- Now set or clear the timer as appropriate.
+    if (btargetsFound  &&  bWaitOnce  &&  timeControl) {
+        //--- The only condition where we need to clear the timer.
+        clearInterval (timeControl);
+        delete controlObj [controlKey]
+    }
+    else {
+        //--- Set a timer, if needed.
+        if ( ! timeControl) {
+            timeControl = setInterval ( function () {
+                    waitForKeyElements (selectorTxt, actionFunction,
+                        bWaitOnce, iframeSelector);
+                },
+                300
+            );
+            controlObj [controlKey] = timeControl;
+        }
+    }
+    waitForKeyElements.controlObj   = controlObj;
+  }
+
+  window.waitForKeyElements(".cache-details", addSend2cgeoColumn, false);
 
   // Defines the elements to insert into the page //////////////////////////////
   var boxWidth = 20,
@@ -88,23 +164,9 @@ s.textContent =  '(' + function() {
     $("#searchResultsTable col").first().after('<col></col>');
 
     var caches = $(".cache-details");
-    caches.each(function() {
-
-        var GCCode = $(this ).text();
-        GCCode = GCCode.slice( GCCode.indexOf("|") + 1 ).trim();
-
-        var html = '<td class="mobile-show" >'
-             + '<a href="https://send2.cgeo.org/add.html?cache=' + GCCode + '" '
-             + 'onclick="window.s2geo(\'' + GCCode + '\'); return false;">'
-             + '<img height="50" src="https://send2.cgeo.org/send2cgeo.png" '
-             + 'border="0"> '
-             + '</a></td>';
-
-             $(this).parent().parent().before(html);
-
-    });
-
-    } else if(document.getElementById('ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode') != null){
+    caches.each(addSend2cgeoColumn);
+    
+  } else if(document.getElementById('ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode') != null){
     // geocaching.com cache detail page
     var GCCode = $('#ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode')
                   .html();
