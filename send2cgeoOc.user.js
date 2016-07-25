@@ -5,8 +5,9 @@
 // @author         c:geo team and contributors
 // @grant          none
 // @include        http://www.opencaching.de/viewcache.php*
+// @include        https://www.opencaching.de/viewcache.php*
 // @icon           https://send2.cgeo.org/send2cgeo.png
-// @version        0.4
+// @version        0.5
 // ==/UserScript==
 
 // Inserts javascript that will be called by the s2cgeo button. The closure
@@ -32,7 +33,7 @@ s.innerHTML = 'function s2cgeo(code) {\n'
     + '    document.getElementById(\'send2cgeo\').style.display="none";}, 3000);\n'
     + '  };\n'
     + 'document.getElementById("send2cgeo").childNodes[1]\n'
-    + '  .src="http://send2.cgeo.org/add.html?cache="+code;\n'
+    + '  .src="https://send2.cgeo.org/add.html?cache="+code;\n'
 	+ '}';
 
 // Inject Script.
