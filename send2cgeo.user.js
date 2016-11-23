@@ -18,7 +18,7 @@
 // @downloadURL    https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
 // @updateURL      https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
 // @supportURL     https://github.com/cgeo/send2cgeo/issues
-// @version        0.37
+// @version        0.38
 // ==/UserScript==
 
 // Inserts javascript that will be called by the s2cgeo button. The closure
@@ -27,6 +27,13 @@
 // accessed.
 
 var s       = document.createElement('script');
+var premium = document.getElementsByClassName('li-membership')[0];
+if (premium.children[0].innerHTML == 'Upgrade') {
+    premium = false;
+} else {
+    premium = true;
+}
+
 s.type      = 'text/javascript';
 s.textContent =  '(' + function() {
   // function that handles the actual sending //////////////////////////////////
@@ -51,18 +58,23 @@ s.textContent =  '(' + function() {
   function addSend2cgeoColumn(field) {
         var GCCode = $(field).text();
         GCCode = GCCode.slice( GCCode.indexOf("|") + 1 ).trim();
-        
-        var html = '<td class="mobile-show" >'
-             + '<a href="https://send2.cgeo.org/add.html?cache=' + GCCode + '" '
-             + 'onclick="window.s2geo(\'' + GCCode + '\'); return false;">'
-             + '<img height="50" src="https://send2.cgeo.org/send2cgeo.png" '
-             + 'border="0"> '
-             + '</a></td>';
 
-             $(field).parent().parent().before(html);
+        var html = '<td class="mobile-show" >'
+            + '<a href="https://send2.cgeo.org/add.html?cache=' + GCCode + '" '
+            + 'onclick="window.s2geo(\'' + GCCode + '\'); return false;">'
+            + '<img height="50" src="https://send2.cgeo.org/send2cgeo.png" '
+            + 'border="0"> '
+            + '</a></td>';
+
+        // check for premium (different columns)
+        if (window.premium) {
+            $(field).parent().parent().before(html);
+        } else {
+            $(field).parent().parent().after(html);
+        }
   }
 
-  // waits for new elements (by ajax calls) injected into the DOM and calls a certain 
+  // waits for new elements (by ajax calls) injected into the DOM and calls a certain
   // method for certain elements
   // (here: used in search results - these are loaded lazyly when scrolling down)
   window.waitForKeyElements = function(selectorTxt, actionFunction, bWaitOnce, iframeSelector) {
@@ -165,7 +177,7 @@ s.textContent =  '(' + function() {
 
     var caches = $(".cache-details");
     caches.each(addSend2cgeoColumn);
-    
+
   } else if(document.getElementById('ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode') != null){
     // geocaching.com cache detail page
     var GCCode = $('#ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode')
