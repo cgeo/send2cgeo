@@ -60,13 +60,12 @@ document.getElementsByTagName("head")[0].appendChild(s);
 	document.getElementsByTagName("body")[0].appendChild(b);
 	
   // Append to send2cgeo links/buttons /////////////////////////////////////////
-  var oc = document.getElementsByClassName('exportbutton')[0].parentNode.parentNode;
+  var oc = document.getElementsByClassName('exportlist')[0].parentNode.parentNode;
 
   if(oc !== null) {
     
-	var occode=oc.innerHTML;
-	var wppos = occode.indexOf('wp=');
-	occode = occode.substring(wppos+3,occode.indexOf("'", wppos+3));
+	var occode = document.title;
+	occode = occode.substring(0,occode.indexOf(" ", 0));
 	
     var html = '<img src="resource2/ocstyle/images/viewcache/14x19-gps-device.png" class="icon16" alt="" />'
 			 + '<a class="send-to-gps" '
