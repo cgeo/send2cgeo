@@ -7,7 +7,7 @@
 // @include        http://www.opencaching.de/viewcache.php*
 // @include        https://www.opencaching.de/viewcache.php*
 // @icon           https://send2.cgeo.org/send2cgeo.png
-// @version        0.5
+// @version        0.6
 // ==/UserScript==
 
 // Inserts javascript that will be called by the s2cgeo button. The closure
