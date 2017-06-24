@@ -7,7 +7,7 @@
 // @include        http://www.opencaching.de/viewcache.php*
 // @include        https://www.opencaching.de/viewcache.php*
 // @icon           https://send2.cgeo.org/send2cgeo.png
-// @version        0.5
+// @version        0.6
 // ==/UserScript==
 
 // Inserts javascript that will be called by the s2cgeo button. The closure
@@ -60,13 +60,12 @@ document.getElementsByTagName("head")[0].appendChild(s);
 	document.getElementsByTagName("body")[0].appendChild(b);
 	
   // Append to send2cgeo links/buttons /////////////////////////////////////////
-  var oc = document.getElementsByClassName('exportbutton')[0].parentNode.parentNode;
+  var oc = document.getElementsByClassName('exportlist')[0].parentNode.parentNode;
 
   if(oc !== null) {
     
-	var occode=oc.innerHTML;
-	var wppos = occode.indexOf('wp=');
-	occode = occode.substring(wppos+3,occode.indexOf("'", wppos+3));
+	var occode = document.title;
+	occode = occode.substring(0,occode.indexOf(" ", 0));
 	
     var html = '<img src="resource2/ocstyle/images/viewcache/14x19-gps-device.png" class="icon16" alt="" />'
 			 + '<a class="send-to-gps" '
