@@ -27,7 +27,12 @@
 // accessed.
 
 var s       = document.createElement('script');
-var premium = document.getElementsByClassName('li-upgrade')[0];
+var premium;
+if (document.getElementsByClassName('li-membership').length) {
+    premium = document.getElementsByClassName('li-membership')[0];
+} else {
+    premium = document.getElementsByClassName('li-upgrade')[0];
+}
 if (premium.children[0].innerHTML == 'Upgrade') {
     premium = false;
 } else {
