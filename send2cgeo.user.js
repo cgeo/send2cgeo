@@ -27,14 +27,22 @@
 // accessed.
 
 var s       = document.createElement('script');
+
+// check for premium membership (parts of the page content are different)
 var premium;
 if (document.getElementsByClassName('li-membership').length) {
     premium = document.getElementsByClassName('li-membership')[0];
 } else {
     premium = document.getElementsByClassName('li-upgrade')[0];
 }
-if (premium.children[0].innerHTML == 'Upgrade') {
-    premium = false;
+
+// premium has an empty <li class="li-upgrade">
+if (premium.children.length) {
+    // in case GC.com changes the content,
+    // it still has to contain only "Upgrade" string
+    if (premium.children[0].innerHTML == 'Upgrade') {
+        premium = false;
+    }
 } else {
     premium = true;
 }
