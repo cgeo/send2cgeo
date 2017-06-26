@@ -4,6 +4,7 @@
 // @description    Add button "Send to c:geo" to geocaching.com
 // @author         c:geo team and contributors
 // @grant          none
+// @include        https://www.geocaching.com/play/search
 // @include        https://www.geocaching.com/play/search/*
 // @include        http://www.geocaching.com/seek/cache_details*
 // @include        https://www.geocaching.com/seek/cache_details*
