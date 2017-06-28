@@ -4,6 +4,7 @@
 // @description    Add button "Send to c:geo" to geocaching.com
 // @author         c:geo team and contributors
 // @grant          none
+// @include        https://www.geocaching.com/play/search*
 // @include        https://www.geocaching.com/play/search/*
 // @include        http://www.geocaching.com/seek/cache_details*
 // @include        https://www.geocaching.com/seek/cache_details*
@@ -27,9 +28,22 @@
 // accessed.
 
 var s       = document.createElement('script');
-var premium = document.getElementsByClassName('li-membership')[0];
-if (premium.children[0].innerHTML == 'Upgrade') {
-    premium = false;
+
+// check for premium membership (parts of the page content are different)
+var premium;
+if (document.getElementsByClassName('li-membership').length) {
+    premium = document.getElementsByClassName('li-membership')[0];
+} else {
+    premium = document.getElementsByClassName('li-upgrade')[0];
+}
+
+// premium has an empty <li class="li-upgrade">
+if (premium.children.length) {
+    // in case GC.com changes the content,
+    // it still has to contain only "Upgrade" string
+    if (premium.children[0].innerHTML == 'Upgrade') {
+        premium = false;
+    }
 } else {
     premium = true;
 }
