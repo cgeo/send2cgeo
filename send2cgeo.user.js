@@ -189,8 +189,15 @@ s.textContent =  '(' + function() {
   } else if(document.getElementById('searchResultsTable') != null){
     // geocaching.com new search
 
-    $("#searchResultsTable th").first().after('<th class="mobile-show"><a class="outbound-link">Send to c:geo</a></th>');
-    $("#searchResultsTable col").first().after('<col></col>');
+    // Send 2 cgeo column header for func addSend2cgeoColumn
+    var S2CGHeader = '<th class="mobile-show"><a class="outbound-link">Send to c:geo</a></th>';
+    if (window.premium) {
+      $("#searchResultsTable th:nth-child(2)").after(S2CGHeader);
+      $("#searchResultsTable col:nth-child(2)").after('<col></col>');
+    } else {
+      $("#searchResultsTable th").first().after(S2CGHeader);
+      $("#searchResultsTable col").first().after('<col></col>');
+    }
 
     var caches = $(".cache-details");
     caches.each(addSend2cgeoColumn);
