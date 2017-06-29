@@ -33,12 +33,15 @@ var s       = document.createElement('script');
 var premium;
 if (document.getElementsByClassName('li-membership').length) {
     premium = document.getElementsByClassName('li-membership')[0];
-} else {
+} else if (document.getElementsByClassName('li-upgrade').length) {
     premium = document.getElementsByClassName('li-upgrade')[0];
+} else {
+    premium = true;
 }
 
-// premium has an empty <li class="li-upgrade">
-if (premium.children.length) {
+// premium has either an empty <li class="li-upgrade">
+// or none of li-membership / li-upgrade present
+if (premium != true && premium.children.length) {
     // in case GC.com changes the content,
     // it still has to contain only "Upgrade" string
     if (premium.children[0].innerHTML == 'Upgrade') {
