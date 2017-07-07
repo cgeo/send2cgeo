@@ -4,6 +4,7 @@
 // @description    Add button "Send to c:geo" to geocaching.com
 // @author         c:geo team and contributors
 // @grant          none
+// @include        https://www.geocaching.com/play/search*
 // @include        https://www.geocaching.com/play/search/*
 // @include        http://www.geocaching.com/seek/cache_details*
 // @include        https://www.geocaching.com/seek/cache_details*
@@ -18,7 +19,7 @@
 // @downloadURL    https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
 // @updateURL      https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
 // @supportURL     https://github.com/cgeo/send2cgeo/issues
-// @version        0.38
+// @version        0.40
 // ==/UserScript==
 
 // Inserts javascript that will be called by the s2cgeo button. The closure
@@ -27,12 +28,6 @@
 // accessed.
 
 var s       = document.createElement('script');
-var premium = document.getElementsByClassName('li-membership')[0];
-if (premium.children[0].innerHTML == 'Upgrade') {
-    premium = false;
-} else {
-    premium = true;
-}
 
 s.type      = 'text/javascript';
 s.textContent =  '(' + function() {
@@ -54,6 +49,31 @@ s.textContent =  '(' + function() {
       });
   };
 
+  // check for premium membership (parts of the page content are different)
+  function premiumCheck() {
+      var premium;
+      if (document.getElementsByClassName('li-membership').length) {
+          premium = document.getElementsByClassName('li-membership')[0];
+      } else if (document.getElementsByClassName('li-upgrade').length) {
+          premium = document.getElementsByClassName('li-upgrade')[0];
+      } else {
+          premium = true;
+      }
+
+      // premium has either an empty <li class="li-upgrade">
+      // or none of li-membership / li-upgrade present
+      if (premium != true && premium.children.length) {
+          // in case GC.com changes the content,
+          // it still has to contain only "Upgrade" string
+          if (premium.children[0].innerHTML == 'Upgrade') {
+              premium = false;
+          }
+      } else {
+          premium = true;
+      }
+      return premium;
+  }
+
   // this adds a column with send2cgeo button in search results table
   function addSend2cgeoColumn(field) {
         var GCCode = $(field).text();
@@ -66,12 +86,7 @@ s.textContent =  '(' + function() {
             + 'border="0"> '
             + '</a></td>';
 
-        // check for premium (different columns)
-        if (window.premium) {
             $(field).parent().parent().before(html);
-        } else {
-            $(field).parent().parent().after(html);
-        }
   }
 
   // waits for new elements (by ajax calls) injected into the DOM and calls a certain
@@ -172,8 +187,15 @@ s.textContent =  '(' + function() {
   } else if(document.getElementById('searchResultsTable') != null){
     // geocaching.com new search
 
-    $("#searchResultsTable th").first().after('<th class="mobile-show"><a class="outbound-link">Send to c:geo</a></th>');
-    $("#searchResultsTable col").first().after('<col></col>');
+    // Send 2 cgeo column header for func addSend2cgeoColumn
+    var S2CGHeader = '<th class="mobile-show"><a class="outbound-link">Send to c:geo</a></th>';
+    if (premiumCheck()) {
+      $("#searchResultsTable th").first().after(S2CGHeader);
+      $("#searchResultsTable col").first().after('<col></col>');
+    } else {
+      $("#searchResultsTable th").first().before(S2CGHeader);
+      $("#searchResultsTable col").first().before('<col></col>');
+}
 
     var caches = $(".cache-details");
     caches.each(addSend2cgeoColumn);
