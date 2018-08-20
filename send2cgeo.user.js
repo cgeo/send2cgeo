@@ -19,7 +19,7 @@
 // @downloadURL    https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
 // @updateURL      https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
 // @supportURL     https://github.com/cgeo/send2cgeo/issues
-// @version        0.45
+// @version        0.46
 // ==/UserScript==
 
 // Inserts javascript that will be called by the s2cgeo button. The closure
@@ -41,9 +41,9 @@ s.textContent =  '(' + function() {
     // hide iframe for now and wait for page to be loaded
     $('#send2cgeo iframe')
       .hide()
-      .unbind('load')
+      .off('load')
       .attr('src', 'https://send2.cgeo.org/add.html?cache='+code)
-      .load(function() {
+      .on('load', function() {
         // hide "please wait text" and show iframe
         $('#send2cgeo div').hide();
         // hide box after 3 seconds
