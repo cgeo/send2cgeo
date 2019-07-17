@@ -82,7 +82,7 @@ s.textContent = '(' + function() {
 
     function s2geomultiProcessLine(toAddIframe, skipFound, requestedCnt, alreadySent) {
         if (skipFound) {
-            if (toAddIframe.parent().parent().find("use[xlink\\:href*=#icon-found]").length === 0) {
+            if (toAddIframe.parent().parent().find('use[xlink\\:href*="#icon-found"]').length === 0) {
                 var code = toAddIframe.attr("send2cgeo_gccode");
                 toAddIframe.html("<iframe width=120 height=80 src=\"https://send2.cgeo.org/add.html?cache=" + code + "\">");
                 toAddIframe.attr("send2cgeo_sent", "1");
