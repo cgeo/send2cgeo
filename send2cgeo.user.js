@@ -270,7 +270,7 @@ s.textContent =  '(' + function() {
                   .html();
 
     var html = '<dt class="label">'
-             + '<a id="ctl00_ContentBody_lnkGpxDownload" onclick="window.s2geo(\''+GCCode+\''); return false;"><span id="ctl00_ContentBody_uxDownloadLabel">Send to c:geo</span></a>'
+             + '<a id="ctl00_ContentBody_lnkGpxDownload" onclick="window.s2geo(\''+GCCode+'\'); return false;"><span id="ctl00_ContentBody_uxDownloadLabel">Send to c:geo</span></a>'
 	     + '</dt>'
 
 
