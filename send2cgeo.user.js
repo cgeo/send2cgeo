@@ -269,11 +269,10 @@ s.textContent =  '(' + function() {
     var GCCode = $('#ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode')
                   .html();
 
-    var html = '<input type="button" '
-             + 'value="Send to c:geo" '
-             + 'onclick="window.s2geo(\''+GCCode+'\'); '
-             + 'return false;" '
-             + '/>';
+    var html = '<dt class="label">'
+             + '<a id="ctl00_ContentBody_lnkGpxDownload" onclick="window.s2geo(\''+GCCode+'\'); return false;"><span id="ctl00_ContentBody_uxDownloadLabel">Send to c:geo</span></a>'
+	     + '</dt>'
+
 
     $('#Download p:last').append(html);
     $('#Download dd:last').append(html);
