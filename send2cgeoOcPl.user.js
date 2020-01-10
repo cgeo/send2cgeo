@@ -5,7 +5,9 @@
 // @author         c:geo team and contributors
 // @grant          none
 // @include        http://opencaching.pl/viewcache.php*
+// @include        https://opencaching.pl/viewcache.php*
 // @include        http://www.opencaching.nl/viewcache.php*
+// @include        https://www.opencaching.nl/viewcache.php*
 // @icon           https://send2.cgeo.org/send2cgeo.png
 // @version        0.3
 // ==/UserScript==
