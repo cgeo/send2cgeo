@@ -4,6 +4,7 @@
 // @description    Add button "Send to c:geo" to geocaching.com
 // @author         c:geo team and contributors
 // @grant          none
+// @require        http://code.jquery.com/jquery-3.4.1.min.js
 // @include        https://www.geocaching.com/play/search*
 // @include        https://www.geocaching.com/play/search/*
 // @include        http://www.geocaching.com/seek/cache_details*
