@@ -143,9 +143,10 @@ s.textContent =  '(' + function() {
   function addSend2cgeoColumn(field) {
         var GCCode = $(field).text();
         GCCode = GCCode.slice( GCCode.indexOf("|") + 1 ).trim();
+        if (document.getElementById('s2cg-' + GCCode)) return;
 
         var html = '<td class="mobile-show" >'
-            + '<a href="https://send2.cgeo.org/add.html?cache=' + GCCode + '" '
+            + '<a id="s2cg-' + GCCode + '" href="https://send2.cgeo.org/add.html?cache=' + GCCode + '" '
             + "onclick='window.s2geo(\"" + GCCode + "\"); return false;' send2cgeo_gccode='"+GCCode+"'>"
             + '<img height="50" src="https://send2.cgeo.org/send2cgeo.png" '
             + 'border="0"> '
