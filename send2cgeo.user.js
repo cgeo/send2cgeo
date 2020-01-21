@@ -3,7 +3,6 @@
 // @namespace      http://send2.cgeo.org/
 // @description    Add button "Send to c:geo" to geocaching.com
 // @author         c:geo team and contributors
-// @grant          none
 // @require        http://code.jquery.com/jquery-3.4.1.min.js
 // @include        https://www.geocaching.com/play/search*
 // @include        https://www.geocaching.com/play/search/*
@@ -23,19 +22,37 @@
 // @version        0.47
 // ==/UserScript==
 
-// Inserts javascript that will be called by the s2cgeo button. The closure
-// look strange, but avoids having to escape the code. Almost everything
-// is put into that script element so that geocaching.com's jQuery may be
-// accessed.
+var start = function(c) {
+    quitOnAdFrames()
+        .then(function() {return jqueryInit(c);})
+        .done(function() {send2cgeoMain()});
+};
+
+// Solve Problems with jQuery (browse map)
+var quitOnAdFrames = function(c) {
+    var quitOnAdFramesDeref = new jQuery.Deferred();
+    if(window.name) {
+        if (window.name.substring(0, 18) !== 'google_ads_iframe_') quitOnAdFramesDeref.resolve();
+        else quitOnAdFramesDeref.reject();
+    }
+    else {
+        quitOnAdFramesDeref.resolve();
+    }
+    return quitOnAdFramesDeref.promise();
+};
+
+var jqueryInit = function(c) {
+    if (typeof c.$ === "undefined") c.$ = c.$ || unsafeWindow.$ || window.$ || null;
+    if (typeof c.jQuery === "undefined") c.jQuery = c.jQuery || unsafeWindow.jQuery || window.jQuery || null;
+    var jqueryInitDeref = new jQuery.Deferred();
+    jqueryInitDeref.resolve();
+    return jqueryInitDeref.promise();
+};
+
 
 /* global s2geomulti */
 
-var s = document.createElement('script');
-
-s.type = 'text/javascript';
-s.textContent = '(' + function() {
-    // function that handles the actual sending //////////////////////////////////
-
+var send2cgeoMain = function() {
     window.s2geo = function(code) {
         // show the box and the "please wait" text
         $("#send2cgeo, #send2cgeo div").fadeIn();
@@ -257,7 +274,7 @@ s.textContent = '(' + function() {
             + 'align="absmiddle" border="0"> '
             + '<span>Send to c:geo</span>';
 
-        map.innerHTML = map.innerHTML.replace('Log Visit</span>', html);
+        document.getElementById('cacheDetailsTemplate').innerHTML = document.getElementById('cacheDetailsTemplate').innerHTML.replace('Log Visit</span>', html);
 
     } else if(document.getElementById('searchResultsTable') !== null) {
         // geocaching.com new search
@@ -302,9 +319,6 @@ s.textContent = '(' + function() {
             }
         );
     }
+}
 
-} + ')();';
-
-// Inject Script. Can't use jQuery yet, because the page is not
-// accessible from Tampermonkey
-document.getElementsByTagName('head')[0].appendChild(s);
+start(this);
