@@ -246,7 +246,8 @@ s.textContent = '(' + function() {
         + '</div>');
 
     // react depending on the detected site //////////////////////////////////////
-    if (document.getElementById('cacheDetailsTemplate') !== null) {
+    var map = document.getElementById('cacheDetailsTemplate');
+    if (map !== null) {
         // geocaching.com map view
         var html = 'Log Visit</span></a>'
             + '<a class="lnk ui-block-b" '
