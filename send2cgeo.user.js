@@ -10,6 +10,8 @@
 // @include        http://www.geocaching.com/seek/cache_details*
 // @include        https://www.geocaching.com/seek/cache_details*
 // @include        https://www.geocaching.com/map/*
+// @include        https://www.geocaching.com/play/map*
+// @include        https://www.geocaching.com/play/map/*
 // @include        http://www.geocaching.com/geocache/*
 // @include        https://www.geocaching.com/geocache/*
 // @include        http://www.geocaching.com/my/recentlyviewedcaches*
@@ -232,7 +234,7 @@ s.textContent = '(' + function() {
     var boxWidth = 20,
         boxHeight = 7;
 
-    var boxStyle = 'display:none; background:#1D1D1D; z-index:1000; left:50%; '
+    var boxStyle = 'display:none; background:#1D1D1D; z-index:1010; left:50%; '
         + 'box-shadow:0 0 0.5em #000; padding:0; border:0; '
         + 'position:fixed; top:0.5em;  text-align:center; '
         + 'margin-left:-' + (boxWidth/2) + 'em; line-height:' + boxHeight + 'em; '
@@ -260,6 +262,35 @@ s.textContent = '(' + function() {
 
         map.innerHTML = map.innerHTML.replace('Log Visit</span>', html);
 
+    } else if (document.location.href.match(/\.com\/play\/map/)) {
+        // Use Code from GClh.
+        // Build mutation observer for body.
+        function buildObserverBodySearchMap() {
+            var observerBodySearchMap = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    // Insert s2cgeo.
+                    if (document.querySelector('.cache-preview-action-menu')) {
+                        var GCCode = $('.cache-metadata-code').html();
+                        if (document.getElementById('s2cg-' + GCCode)) return; // Break when a button with the GCCode alrady exist.
+                        if (document.querySelector('.cache-preview-action-menu ul .c2cg')) $('.cache-preview-action-menu ul .c2cg').remove(); // Remove button when the GCCode has change.
+                        var html = '<li class="c2cg"><a style="cursor:pointer;" id="s2cg-' + GCCode + '" onclick="window.s2geo(\''+GCCode+'\'); return false;"><img class="action-icon" src="https://send2.cgeo.org/send2cgeo.png" /><span>Send to c:geo</span></a></li>';
+                        $('.more-info-li').before(html);
+                    }
+                });
+            });
+            var target = document.querySelector('body');
+            var config = { attributes: true, childList: true, characterData: true };
+            observerBodySearchMap.observe(target, config);
+        }
+        // Check if mutation observer for body can be build.
+        function checkForBuildObserverBodySearchMap(waitCount) {
+            if ($('body')[0]) {
+                if ($('.s2cg_buildObserverBodySearchMap')[0]) return;
+                $('body').addClass('s2cg_buildObserverBodySearchMap');
+                buildObserverBodySearchMap();
+            } else {waitCount++; if (waitCount <= 200) setTimeout(function(){checkForBuildObserverBodySearchMap(waitCount);}, 50);}
+        }
+        checkForBuildObserverBodySearchMap(0);
     } else if(document.getElementById('searchResultsTable') !== null) {
         // geocaching.com new search
 
