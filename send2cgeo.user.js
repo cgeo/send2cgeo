@@ -274,7 +274,7 @@ var send2cgeoMain = function() {
             + 'align="absmiddle" border="0"> '
             + '<span>Send to c:geo</span>';
 
-        document.getElementById('cacheDetailsTemplate').innerHTML = document.getElementById('cacheDetailsTemplate').innerHTML.replace('Log Visit</span>', html);
+        map.innerHTML = map.innerHTML.replace('Log Visit</span>', html);
 
     } else if(document.getElementById('searchResultsTable') !== null) {
         // geocaching.com new search
