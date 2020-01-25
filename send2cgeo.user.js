@@ -271,15 +271,22 @@ s.textContent = '(' + function() {
                     // Insert s2cgeo.
                     if (document.querySelector('.cache-preview-action-menu')) {
                         var GCCode = $('.cache-metadata-code').html();
-                        if (document.getElementById('s2cg-' + GCCode)) return; // Break when a button with the GCCode alrady exist.
-                        if (document.querySelector('.cache-preview-action-menu ul .c2cg')) $('.cache-preview-action-menu ul .c2cg').remove(); // Remove button when the GCCode has change.
+                        // Break when a button with the GCCode alrady exist.
+                        if (document.getElementById('s2cg-' + GCCode)) {
+                            return;
+                        }
+                        // Remove button when the GCCode has change.
+                        if (document.querySelector('.cache-preview-action-menu ul .c2cg')) {
+                            $('.cache-preview-action-menu ul .c2cg').remove();
+                        }
+                        // Add c2cg button.
                         var html = '<li class="c2cg"><a style="cursor:pointer;" id="s2cg-' + GCCode + '" onclick="window.s2geo(\''+GCCode+'\'); return false;"><img class="action-icon" src="https://send2.cgeo.org/send2cgeo.png" /><span>Send to c:geo</span></a></li>';
                         $('.more-info-li').before(html);
                     }
                 });
             });
             var target = document.querySelector('body');
-            var config = { attributes: true, childList: true, characterData: true };
+            var config = {attributes: true, childList: true, characterData: true};
             observerBodySearchMap.observe(target, config);
         }
         // Check if mutation observer for body can be build.
