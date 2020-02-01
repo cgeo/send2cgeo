@@ -5,19 +5,7 @@
 // @author         c:geo team and contributors
 // @grant          none
 // @require        http://code.jquery.com/jquery-3.4.1.min.js
-// @include        https://www.geocaching.com/play/search*
-// @include        https://www.geocaching.com/play/search/*
-// @include        http://www.geocaching.com/seek/cache_details*
-// @include        https://www.geocaching.com/seek/cache_details*
-// @include        https://www.geocaching.com/map/*
-// @include        https://www.geocaching.com/play/map*
-// @include        https://www.geocaching.com/play/map/*
-// @include        http://www.geocaching.com/geocache/*
-// @include        https://www.geocaching.com/geocache/*
-// @include        http://www.geocaching.com/my/recentlyviewedcaches*
-// @include        https://www.geocaching.com/my/recentlyviewedcaches*
-// @include        http://www.geocaching.com/seek/nearest*
-// @include        https://www.geocaching.com/seek/nearest*
+// @include        http*://www.geocaching.com/*
 // @icon           https://send2.cgeo.org/send2cgeo.png
 // @downloadURL    https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
 // @updateURL      https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
@@ -247,10 +235,9 @@ s.textContent = '(' + function() {
         + '<iframe style="' + iframeStyle + '"></iframe>'
         + '</div>');
 
-    // react depending on the detected site //////////////////////////////////////
-    var map = document.getElementById('cacheDetailsTemplate');
-    if (map !== null) {
-        // geocaching.com map view
+    // Send to c:geo on browsemap (old map)
+    if (document.location.href.match(/\.com\/map/)) {
+        var map = document.getElementById('cacheDetailsTemplate');
         var html = 'Log Visit</span></a>'
             + '<a class="lnk ui-block-b" '
             + 'href="https://send2.cgeo.org/add.html?cache={{=gc}}" '
@@ -261,11 +248,10 @@ s.textContent = '(' + function() {
             + '<span>Send to c:geo</span>';
 
         map.innerHTML = map.innerHTML.replace('Log Visit</span>', html);
+    }
 
-    } else if (document.location.href.match(/\.com\/play\/map/)) {
-        // geocaching.com new map
-
-        // Use Code from GClh
+    // Send to c:geo on seachmap (new map)
+    if (document.location.href.match(/\.com\/play\/map/)) {
         // Build mutation observer for body
         function buildObserverBodySearchMap() {
             var observerBodySearchMap = new MutationObserver(function (mutations) {
@@ -321,9 +307,10 @@ s.textContent = '(' + function() {
         }
         checkForBuildObserverBodySearchMap(0);
 
-    } else if(document.getElementById('searchResultsTable') !== null) {
-        // geocaching.com new search
+    }
 
+    // Send to c:geo on new seachpage
+    if (document.location.href.match(/\.com\/play\/search/)) {
         // Send2cgeo column header for func addSend2cgeoColumn
         var S2CGHeader = '<th class="mobile-show"><a class="outbound-link">Send to c:geo</a></th>';
         if (premiumCheck()) {
@@ -336,9 +323,10 @@ s.textContent = '(' + function() {
 
         var caches = $(".cache-details");
         caches.each(addSend2cgeoColumn);
+    }
 
-    } else if (document.getElementById('ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode') !== null) {
-        // geocaching.com cache detail page
+    // Send to c:geo on cache detail page
+    if (document.location.href.match(/\.com\/(seek\/cache_details\.aspx|geocache\/)/) && !document.location.href.match(/^\/(geocache\/).*\/log/)) {
         var GCCode = $("#ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode").html();
 
         var html2 = '<dt class="label">'
@@ -348,8 +336,10 @@ s.textContent = '(' + function() {
 
         $("#Download dd:last").append(html2);
 
-    } else {
-        // geocaching.com recentlyviewed
+    }
+
+    // Send to c:geo on recentlyviewed and nearest list
+    if (document.location.href.match(/\.com\/seek\/nearest\.aspx/) || document.location.href.match(/\.com\/my\/recentlyviewedcaches\.aspx/)) {
         $('img[src="/images/icons/16/send_to_gps.png"]').each(
             function() {
                 $(this).attr('alt', "Send to c:geo").attr('title', "Send to c:geo");
