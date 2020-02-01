@@ -6,7 +6,7 @@
 // @grant          none
 // @require        http://code.jquery.com/jquery-3.4.1.min.js
 // @include        http*://www.geocaching.com/*
-// @exclude        /^https?://www\.geocaching\.com/(login|jobs|careers|brandedpromotions|promotions|blog|help|seek/sendtogps|profile/profilecontent|account/orders)/
+// @exclude        /^https?://www\.geocaching\.com/(login|jobs|careers|brandedpromotions|promotions|blog|help|seek/sendtogps|profile|account)/
 // @icon           https://send2.cgeo.org/send2cgeo.png
 // @downloadURL    https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
 // @updateURL      https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
