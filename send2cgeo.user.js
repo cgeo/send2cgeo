@@ -327,7 +327,7 @@ s.textContent = '(' + function() {
     }
 
     // Send to c:geo on cache detail page
-    if (document.location.href.match(/\.com\/(seek\/cache_details\.aspx|geocache\/)/) && !document.location.href.match(/^\/(geocache\/).*\/log/)) {
+    if (document.location.href.match(/\.com\/(seek\/cache_details\.aspx|geocache\/)/)) {
         var GCCode = $("#ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode").html();
 
         var html2 = '<dt class="label">'
