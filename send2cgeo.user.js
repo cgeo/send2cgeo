@@ -228,8 +228,6 @@ s.textContent = '(' + function() {
         waitForKeyElements.controlObj = controlObj;
     }
 
-    window.waitForKeyElements(".cache-details", addSend2cgeoColumn, false);
-
     // Defines the elements to insert into the page //////////////////////////////
     var boxWidth = 20,
         boxHeight = 7;
@@ -323,6 +321,8 @@ s.textContent = '(' + function() {
 
     } else if(document.getElementById('searchResultsTable') !== null) {
         // geocaching.com new search
+
+        window.waitForKeyElements(".cache-details", addSend2cgeoColumn, false);
 
         // Send2cgeo column header for func addSend2cgeoColumn
         var S2CGHeader = '<th class="mobile-show"><a class="outbound-link">Send to c:geo</a></th>';
