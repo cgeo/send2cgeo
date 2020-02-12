@@ -112,13 +112,13 @@ document.getElementsByTagName('head')[0].appendChild(s2geomultiScript);
 // This solves the problems with jquery
 var quitOnAdFrames = function() {
     var quitOnAdFramesDeref = new jQuery.Deferred();
-    if(window.name) {
+    if (window.name) {
         if (window.name.substring(0, 18) !== 'google_ads_iframe_') {
             quitOnAdFramesDeref.resolve();
-        }else {
+        } else {
             quitOnAdFramesDeref.reject();
         }
-    }else {
+    } else {
         quitOnAdFramesDeref.resolve();
     }
     return quitOnAdFramesDeref.promise();
@@ -303,8 +303,8 @@ function s2cgGCMain() {
                         }
                         // Add s2cg button.
                         var html = '<li class="s2cg"><a id="s2cg-' + GCCode + '" href="javascript:void(0);" title="Send to c:geo">'
-                            + '    <img class="action-icon" src="https://send2.cgeo.org/send2cgeo.png">'
-                            + '    <span>Send to c:geo</span>'
+                            + '<img class="action-icon" src="https://send2.cgeo.org/send2cgeo.png" />'
+                            + '<span>Send to c:geo</span>'
                             + '</a></li>'
                         $('.more-info-li').before(html);
 
