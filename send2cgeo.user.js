@@ -25,7 +25,7 @@
 // ==/UserScript==
 
 // Function that handles the actual sending
-// The window.s2cgeo functions have to be insert into the pagehead, so that they be called with ´onclick="window.s2geo"´
+// The window.s2geo() functions have to be insert into the pagehead, so that they be called with onclick="window.s2geo"
 var s2cgScript = document.createElement('script');
 s2cgScript.type = 'text/javascript';
 s2cgScript.innerHTML = 'window.s2geo = function(GCCode) {'
@@ -94,10 +94,16 @@ s2geomultiScript.innerHTML = ''
 
     + 'function s2geomultiProcessLine(toAddIframe, skipFound, requestedCnt, alreadySent) {'
     + '    if (skipFound) {'
-    + '        var GCCode = toAddIframe.attr("send2cgeo_gccode");'
-    + '        toAddIframe.html("<iframe width=120 height=80 src=\'https://send2.cgeo.org/add.html?cache=" + GCCode + "\'>");'
-    + '        toAddIframe.attr("send2cgeo_sent", "1");'
-    + '        s2cgeoProgressReport((alreadySent + 1) + " ", alreadySent !== 0);'
+    + '        if (toAddIframe.parent().parent().find("use[xlink\\:href*=#icon-found]").length === 0) {''
+    + '             var GCCode = toAddIframe.attr("send2cgeo_gccode");'
+    + '             toAddIframe.html("<iframe width=120 height=80 src=\"https://send2.cgeo.org/add.html?cache="+GCCode+"\">");'
+    + '             toAddIframe.attr("send2cgeo_sent","1");'
+    + '            s2cgeoProgressReport((alreadySent+1)+" ",alreadySent!==0);'
+    + '        } else {'
+    + '            var trToDel = toAddIframe.parent().parent();'
+    + '            trToDel.remove();'
+    + '            s2cgeoProgressReport(".",alreadySent!==0);'
+    + '        }'
     + '    }'
     + '    setTimeout('
     + '        function() {'
@@ -308,7 +314,8 @@ function s2cgGCMain() {
                             + '</a></li>'
                         $('.more-info-li').before(html);
 
-                        // On the new searchmap the window.s2geo() doesn't work.
+                        // Because jQuery is not supported by the Search Map, the window.s2geo() function does not work.
+                        // The following function is a workaround to solve this problem.
                         $('#s2cg-' + GCCode).bind('click', function() {
                             // show the box and the "please wait" text
                             $("#send2cgeo, #send2cgeo div").fadeIn();
