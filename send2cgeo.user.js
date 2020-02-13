@@ -3,7 +3,6 @@
 // @namespace      http://send2.cgeo.org/
 // @description    Add button "Send to c:geo" to geocaching.com
 // @author         c:geo team and contributors
-// @grant          none
 // @require        http://code.jquery.com/jquery-3.4.1.min.js
 // @include        http*://www.geocaching.com/*
 // @exclude        /^https?://www\.geocaching\.com/(login|jobs|careers|brandedpromotions|promotions|blog|help|seek/sendtogps|profile|account)/
@@ -14,107 +13,136 @@
 // @version        0.48
 // ==/UserScript==
 
-// Inserts javascript that will be called by the s2cgeo button. The closure
-// look strange, but avoids having to escape the code. Almost everything
-// is put into that script element so that geocaching.com's jQuery may be
-// accessed.
+// Function that handles the actual sending
+// The window.s2geo() functions have to be insert into the pagehead, so that they be called with onclick="window.s2geo"
+var s2cgScript = document.createElement('script');
+s2cgScript.type = 'text/javascript';
+s2cgScript.innerHTML = 'window.s2geo = function(GCCode) {'
+    // show the box and the "please wait" text
+    + '$("#send2cgeo, #send2cgeo div").fadeIn();'
+    // hide iframe for now and wait for page to be loaded
+    + '$("#send2cgeo iframe")'
+    + '   .hide()'
+    + '   .off("load")'
+    + '   .attr("src", "https://send2.cgeo.org/add.html?cache=" + GCCode)'
+    + '   .on("load",'
+    + '       function() {'
+                  // hide "please wait text" and show iframe
+    + '           $("#send2cgeo div").hide();'
+                  // hide box after 3 seconds
+    + '           $(this).css("display", "block").parent().delay(3000).fadeOut();'
+    + '       }'
+    + '   );'
+    + '};';
 
-/* global s2geomulti */
+document.getElementsByTagName('head')[0].appendChild(s2cgScript);
 
-var s = document.createElement('script');
+var s2geomultiScript = document.createElement('script');
+s2geomultiScript.type = 'text/javascript';
+s2geomultiScript.innerHTML = ''
+    + 'window.s2geomulti = function(requestedCnt, skipFound, moreClicked) {'
+    + '    if (typeof(skipFound) == "undefined" ) {'
+    + '        skipFound = $("#send2cgeo_skip_found").is(":checked");'
+    + '    }'
+    + '    var alreadySent = $("[send2cgeo_sent]").length;'
+    + '    if (alreadySent < requestedCnt) {'
+    + '        var toAddIframe = $("[send2cgeo_gccode]").not("[send2cgeo_sent]").first();'
+    + '        if (toAddIframe.length) {'
+    + '            s2geomultiProcessLine(toAddIframe, skipFound, requestedCnt, alreadySent);'
+    + '        } else {'
+    + '            s2geomultiLoadMore(requestedCnt, alreadySent, skipFound, moreClicked);'
+    + '        }'
+    + '    } else {'
+    + '        s2cgeoProgressReport("Finished after sending " + alreadySent + " caches.");'
+    + '    }'
+    + '};'
 
-s.type = 'text/javascript';
-s.textContent = '(' + function() {
-    // function that handles the actual sending //////////////////////////////////
+    + 'function s2cgeoProgressReport(message, append) {'
+    + '    if (append) {'
+    + '        $("#send2cgeo_controls_div").append(message);'
+    + '    } else {'
+    + '        $("#send2cgeo_controls_div").html(message);'
+    + '    }'
+    + '}'
 
-    window.s2geo = function(code) {
-        // show the box and the "please wait" text
-        $("#send2cgeo, #send2cgeo div").fadeIn();
-        // hide iframe for now and wait for page to be loaded
-        $("#send2cgeo iframe")
-            .hide()
-            .off('load')
-            .attr('src', 'https://send2.cgeo.org/add.html?cache=' + code)
-            .on('load',
-                function() {
-                    // hide "please wait text" and show iframe
-                    $("#send2cgeo div").hide();
-                    // hide box after 3 seconds
-                    $(this).css('display', 'block').parent().delay(3000).fadeOut();
-                }
-            );
-    };
+    + 'function s2geomultiLoadMore(requestedCnt, alreadySent, skipFound, moreClicked) {'
+    + '    if (!moreClicked) {'
+    + '        s2cgeoProgressReport("Waiting to load more caches from web site, sent " + alreadySent + " caches.", false);'
+    + '        var loadMoreBtn = $("#loadmore");'
+    + '        loadMoreBtn.click();'
+    + '        moreClicked = true;'
+    + '    }'
+    + '    s2cgeoProgressReport(".", true);'
+    + '    setTimeout('
+    + '        function() {'
+    + '            s2geomulti(requestedCnt, skipFound, moreClicked);'
+    + '        },'
+    + '        2000'
+    + '    );'
+    + '}'
 
-    function s2cgeoProgressReport(message, append) {
-        if (append) {
-            $("#send2cgeo_controls_div").append(message);
+    + 'function s2geomultiProcessLine(toAddIframe, skipFound, requestedCnt, alreadySent) {'
+    + '    if (skipFound) {'
+    + '        if (toAddIframe.parent().parent().find(\'use[xlink\\\\:href*="#icon-found"]\').length === 0) {'
+    + '             var GCCode = toAddIframe.attr("send2cgeo_gccode");'
+    + '             toAddIframe.html("<iframe width=120 height=80 src=\'https://send2.cgeo.org/add.html?cache="+GCCode+"\'>");'
+    + '             toAddIframe.attr("send2cgeo_sent","1");'
+    + '             s2cgeoProgressReport((alreadySent+1)+" ",alreadySent!==0);'
+    + '        } else {'
+    + '            var trToDel = toAddIframe.parent().parent();'
+    + '            trToDel.remove();'
+    + '            s2cgeoProgressReport(".",alreadySent!==0);'
+    + '        }'
+    + '    }'
+    + '    setTimeout('
+    + '        function() {'
+    + '            s2geomulti(requestedCnt, skipFound, false);'
+    + '        },'
+    + '        100'
+    + '    );'
+    + '};';
+
+document.getElementsByTagName('head')[0].appendChild(s2geomultiScript);
+
+// This solves the problems with jquery
+var quitOnAdFrames = function() {
+    var quitOnAdFramesDeref = new jQuery.Deferred();
+    if (window.name) {
+        if (window.name.substring(0, 18) !== 'google_ads_iframe_') {
+            quitOnAdFramesDeref.resolve();
         } else {
-            $("#send2cgeo_controls_div").html(message);
+            quitOnAdFramesDeref.reject();
         }
+    } else {
+        quitOnAdFramesDeref.resolve();
     }
+    return quitOnAdFramesDeref.promise();
+};
 
-    function s2geomultiLoadMore(requestedCnt, alreadySent, skipFound, moreClicked) {
-        if (!moreClicked) {
-            s2cgeoProgressReport("Waiting to load more caches from web site, sent " + alreadySent + " caches.", false);
-            var loadMoreBtn = $("#loadmore");
-            loadMoreBtn.click();
-            moreClicked=true;
-        }
-        s2cgeoProgressReport(".", true);
-        setTimeout(
-            function() {
-                s2geomulti(requestedCnt, skipFound, moreClicked);
-            },
-            2000
-        );
+var jqueryInit = function(c) {
+    if (typeof c.$ === "undefined") {
+        c.$ = c.$ || unsafeWindow.$ || window.$ || null;
     }
-
-    function s2geomultiProcessLine(toAddIframe, skipFound, requestedCnt, alreadySent) {
-        if (skipFound) {
-            if (toAddIframe.parent().parent().find('use[xlink\\:href*="#icon-found"]').length === 0) {
-                var code = toAddIframe.attr("send2cgeo_gccode");
-                toAddIframe.html("<iframe width=120 height=80 src=\"https://send2.cgeo.org/add.html?cache=" + code + "\">");
-                toAddIframe.attr("send2cgeo_sent", "1");
-                s2cgeoProgressReport((alreadySent + 1) + " ", alreadySent !== 0);
-            } else {
-                var trToDel = toAddIframe.parent().parent();
-                trToDel.remove();
-                s2cgeoProgressReport(".", alreadySent !== 0);
-            }
-        }
-        setTimeout(
-            function() {
-                s2geomulti(requestedCnt, skipFound, false);
-            },
-            100
-        );
+    if (typeof c.jQuery === "undefined") {
+        c.jQuery = c.jQuery || unsafeWindow.jQuery || window.jQuery || null;
     }
+    var jqueryInitDeref = new jQuery.Deferred();
+    jqueryInitDeref.resolve();
+    return jqueryInitDeref.promise();
+};
 
-    window.s2geomulti = function(requestedCnt, skipFound, moreClicked) {
-        if (typeof(skipFound) == "undefined" ) {
-            skipFound = $("#send2cgeo_skip_found").is(":checked");
-        }
-        var alreadySent = $("[send2cgeo_sent]").length;
-        if (alreadySent < requestedCnt) {
-            var toAddIframe = $("[send2cgeo_gccode]").not("[send2cgeo_sent]").first();
-            if (toAddIframe.length) {
-                s2geomultiProcessLine(toAddIframe, skipFound, requestedCnt, alreadySent);
-            } else {
-                s2geomultiLoadMore(requestedCnt, alreadySent, skipFound, moreClicked);
-            }
-        } else {
-            s2cgeoProgressReport("Finished after sending " + alreadySent + " caches.");
-        }
-    };
+var start = function(c) {
+    quitOnAdFrames()
+        .then(function() {
+            return jqueryInit(c);
+        })
+        .done(function() {
+            s2cgGCMain();
+        });
+};
 
-    $("#searchResultsTable").before(
-        "<div id='send2cgeo_controls_div'><a href=\"#\" onclick=\"window.s2geomulti(50); return false;\">Send2cgeo: 50</a> "
-            + "<a href=\"#\" onclick=\"window.s2geomulti(100); return false;\">100</a> "
-            + "<a href=\"#\" onclick=\"window.s2geomulti(200); return false;\">200</a> "
-            + "<a href=\"#\" onclick=\"window.s2geomulti(500); return false;\">500</a> "
-            + "<label><input checked='true' style='display:block' type='checkbox' id='send2cgeo_skip_found' name='send2cgeo_skipt_found'><span class=\"label\">Skip found caches</span></label></div>"
-    );
-
+// This function add the send2cgeo buttons on geocaching.com
+function s2cgGCMain() {
     // check for premium membership (parts of the page content are different)
     function premiumCheck() {
         var premium;
@@ -217,8 +245,6 @@ s.textContent = '(' + function() {
         waitForKeyElements.controlObj = controlObj;
     }
 
-    window.waitForKeyElements(".cache-details", addSend2cgeoColumn, false);
-
     // Defines the elements to insert into the page //////////////////////////////
     var boxWidth = 20,
         boxHeight = 7;
@@ -265,15 +291,35 @@ s.textContent = '(' + function() {
                             return;
                         }
                         // Remove button when the GCCode has change
-                        if (document.querySelector('.cache-preview-action-menu ul .c2cg')) {
-                            $('.cache-preview-action-menu ul .c2cg').remove();
+                        if (document.querySelector('.cache-preview-action-menu ul .s2cg')) {
+                            $('.s2cg').remove();
                         }
-                        // Add c2cg button.
-                        var html = '<li class="c2cg"><a style="cursor:pointer;" id="s2cg-' + GCCode
-                            + '" onclick="window.s2geo(\'' + GCCode + '\'); return false;">'
+                        // Add s2cg button.
+                        var html = '<li class="s2cg"><a id="s2cg-' + GCCode + '" href="javascript:void(0);" title="Send to c:geo">'
                             + '<img class="action-icon" src="https://send2.cgeo.org/send2cgeo.png" />'
-                            + '<span>Send to c:geo</span></a></li>';
+                            + '<span>Send to c:geo</span>'
+                            + '</a></li>'
                         $('.more-info-li').before(html);
+
+                        // Because jQuery is not supported by the Search Map, the window.s2geo() function does not work.
+                        // The following function is a workaround to solve this problem.
+                        $('#s2cg-' + GCCode).bind('click', function() {
+                            // show the box and the "please wait" text
+                            $("#send2cgeo, #send2cgeo div").fadeIn();
+                            // hide iframe for now and wait for page to be loaded
+                            $("#send2cgeo iframe")
+                                .hide()
+                                .off('load')
+                                .attr('src', 'https://send2.cgeo.org/add.html?cache=' + GCCode)
+                                .on('load',
+                                    function() {
+                                        // hide "please wait text" and show iframe
+                                        $("#send2cgeo div").hide();
+                                        // hide box after 3 seconds
+                                        $(this).css('display', 'block').parent().delay(3000).fadeOut();
+                                    }
+                                );
+                        });
                     }
                 });
             });
@@ -312,6 +358,17 @@ s.textContent = '(' + function() {
 
     // Send to c:geo on new seachpage
     if (document.location.href.match(/\.com\/play\/search/)) {
+
+        window.waitForKeyElements(".cache-details", addSend2cgeoColumn, false);
+
+        $("#searchResultsTable").before(
+            "<div id='send2cgeo_controls_div'><a href=\"#\" onclick=\"window.s2geomulti(50); return false;\">Send2cgeo: 50</a> "
+                + "<a href=\"#\" onclick=\"window.s2geomulti(100); return false;\">100</a> "
+                + "<a href=\"#\" onclick=\"window.s2geomulti(200); return false;\">200</a> "
+                + "<a href=\"#\" onclick=\"window.s2geomulti(500); return false;\">500</a> "
+                + "<label><input checked='true' style='display:block' type='checkbox' id='send2cgeo_skip_found' name='send2cgeo_skipt_found'><span class=\"label\">Skip found caches</span></label></div>"
+        );
+
         // Send2cgeo column header for func addSend2cgeoColumn
         var S2CGHeader = '<th class="mobile-show"><a class="outbound-link">Send to c:geo</a></th>';
         if (premiumCheck()) {
@@ -341,23 +398,18 @@ s.textContent = '(' + function() {
 
     // Send to c:geo on recentlyviewed and nearest list
     if (document.location.href.match(/\.com\/seek\/nearest\.aspx/) || document.location.href.match(/\.com\/my\/recentlyviewedcaches\.aspx/)) {
-        $('img[src="/images/icons/16/send_to_gps.png"]').each(
+        $('.BorderTop th').first().after('<th><img src="https://send2.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" /></th>')
+        $('.Data.BorderTop').each(
             function() {
-                $(this).attr('alt', "Send to c:geo").attr('title', "Send to c:geo");
-            }
-        );
-        $('a[title="Send to GPS"]').each(
-            function() {
-                var text = $(this).parent().parent().find(".Merge").last().find(".small").first().text().split("|");
+                var text = $(this).find(".Merge").last().find(".small").first().text().split("|");
                 var GCCode = text[text.length - 2].trim();
-                this.href="javascript:window.s2geo('" + GCCode + "')";
-                this.title = "Send to c:geo";
+                var html = '<td><a href="javascript:void(0);" onclick="window.s2geo(\'' + GCCode + '\'); return false;">'
+                    + '    <img src="https://send2.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" />'
+                    + '</a></td>';
+                $(this).find('td').first().after(html);
             }
         );
     }
+}
 
-} + ')();';
-
-// Inject Script. Can't use jQuery yet, because the page is not
-// accessible from Tampermonkey
-document.getElementsByTagName('head')[0].appendChild(s);
+start(this);
