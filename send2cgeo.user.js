@@ -266,17 +266,16 @@ function s2cgGCMain() {
 
     // Send to c:geo on browsemap (old map)
     if (document.location.href.match(/\.com\/map/)) {
-        var map = document.getElementById('cacheDetailsTemplate');
-        var html = 'Log Visit</span></a>'
-            + '<a class="lnk ui-block-b" '
-            + 'href="https://send2.cgeo.org/add.html?cache={{=gc}}" '
-            + "onclick=\"window.s2geo(\'{{=gc}}\'); return false;\" "
-            + 'class="lnk">'
-            + '<img src="/images/sendtogps/sendtogps_icon.png" '
-            + 'align="absmiddle" border="0"> '
-            + '<span>Send to c:geo</span>';
+        var template = $("#cacheDetailsTemplate").html();
+        var html = '<a href="javascript:void(0);" onclick="window.s2geo(\'{{=gc}}\'); return false;">'
+            + '<img height="16px" src="https://send2.cgeo.org/send2cgeo.png" />'
+            + '<span>Send to c:geo</span></a>';
 
-        map.innerHTML = map.innerHTML.replace('Log Visit</span>', html);
+        var searchpos = template.indexOf('/images/icons/16/write_log.png');
+        var pos = template.indexOf('</a>', searchpos) + 4;
+
+        template = template.substring(0, pos) + html + template.substring(pos, template.length);
+        $("#cacheDetailsTemplate").html(template);
     }
 
     // Send to c:geo on seachmap (new map)
