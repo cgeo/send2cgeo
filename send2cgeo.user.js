@@ -4,8 +4,10 @@
 // @description    Add button "Send to c:geo" to geocaching.com
 // @author         c:geo team and contributors
 // @require        http://code.jquery.com/jquery-3.4.1.min.js
-// @include        http*://www.geocaching.com/*
-// @exclude        /^https?://www\.geocaching\.com/(login|jobs|careers|brandedpromotions|promotions|blog|help|seek/sendtogps|profile|account)/
+// @include        /^https?://www\.geocaching\.com/play/(search|map)/
+// @include        /^https?://www\.geocaching\.com/seek/(cache_details\.|nearest\.|)/
+// @include        /^https?://www\.geocaching\.com/my/recentlyviewedcaches\./
+// @include        /^https?://www\.geocaching\.com/(map/|geocache/)/
 // @icon           https://send2.cgeo.org/send2cgeo.png
 // @downloadURL    https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
 // @updateURL      https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
