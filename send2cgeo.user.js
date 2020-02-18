@@ -1,13 +1,14 @@
 // ==UserScript==
 // @name           Send to c:geo
 // @namespace      http://send2.cgeo.org/
-// @description    Add button "Send to c:geo" to geocaching.com
+// @description    Add button "Send to c:geo" to geocaching.com and opencaching.de
 // @author         c:geo team and contributors
 // @require        http://code.jquery.com/jquery-3.4.1.min.js
 // @include        /^https?://www\.geocaching\.com/play/(search|map)/
 // @include        /^https?://www\.geocaching\.com/seek/(cache_details\.|nearest\.|)/
 // @include        /^https?://www\.geocaching\.com/my/recentlyviewedcaches\./
 // @include        /^https?://www\.geocaching\.com/(map/|geocache/)/
+// @include        /^https?://www\.opencaching\.de/viewcache.php/
 // @icon           https://send2.cgeo.org/send2cgeo.png
 // @downloadURL    https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
 // @updateURL      https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
@@ -143,7 +144,6 @@ var start = function(c) {
         });
 };
 
-// This function add the send2cgeo buttons on geocaching.com
 function s2cgGCMain() {
     // check for premium membership (parts of the page content are different)
     function premiumCheck() {
@@ -264,6 +264,7 @@ function s2cgGCMain() {
         + '<iframe style="' + iframeStyle + '"></iframe>'
         + '</div>');
 
+// This function add the send2cgeo buttons on geocaching.com
     // Send to c:geo on browsemap (old map)
     if (document.location.href.match(/\.com\/map/)) {
         var map = document.getElementById('cacheDetailsTemplate');
@@ -412,6 +413,23 @@ function s2cgGCMain() {
             }
         );
     }
+
+
+// This function add the send2cgeo buttons on opencaching.de
+	// Send to c:geo on viewcache
+    if(document.location.href.match(/\.de\/viewcache\.php/)) {
+        var oc = document.getElementsByClassName('exportlist')[0].parentNode.parentNode;
+        var occode = document.title;
+        occode = occode.substring(0, occode.indexOf(" ", 0));
+
+        var html = '<img src="https://send2.cgeo.org/send2cgeo.png" height="16px" />'
+            + '<a href="javascript:void(0);" onclick="window.s2geo(\'' + occode + '\'); return false;" >'
+            + '<input class="exportbutton" type="button" value="An c:geo senden" title="Send to c:geo" /></a> '
+            + '</p>';
+
+        oc.innerHTML = oc.innerHTML.replace('</p>', html);
+    }
+
 }
 
 start(this);
