@@ -161,7 +161,7 @@ function s2cgGCMain() {
         if (premium !== true && premium.children.length) {
             // in case GC.com changes the content,
             // it still has to contain only "Upgrade" string
-            if (premium.children[0].innerHTML == 'Upgrade') {
+            if (premium.children[0].getAttribute('data-event-label') == 'Upgrade CTA') {
                 premium = false;
             }
         } else {
@@ -378,6 +378,7 @@ function s2cgGCMain() {
         } else {
             $("#searchResultsTable th").first().before(S2CGHeader);
             $("#searchResultsTable col").first().before('<col></col>');
+            $('head').append('<style type="text/css">tr[data-premium] td + td {padding: 0 !important;}</style>');
         }
 
         var caches = $(".cache-details");
