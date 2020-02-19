@@ -389,9 +389,9 @@ function s2cgGCMain() {
     if (document.location.href.match(/\.com\/(seek\/cache_details\.aspx|geocache\/)/)) {
         var GCCode = $("#ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode").html();
 
-        var html2 = '<a href="javascript:void(0);" onclick="window.s2geo(\'' + GCCode + '\'); return false;">'
+        var html2 = '<dt><a href="javascript:void(0);" onclick="window.s2geo(\'' + GCCode + '\'); return false;">'
 			+ '<img src="https://send2.cgeo.org/send2cgeo.png" title="Send to c:geo" height="16px" />'
-			+ '<span>Send to c:geo</span></a>';
+			+ '<span>Send to c:geo</span></a></dt>';
 
         $("#Download dd:last").append(html2);
 
