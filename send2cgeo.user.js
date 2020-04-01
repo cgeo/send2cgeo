@@ -247,6 +247,51 @@ function s2cgGCMain() {
         }
         waitForKeyElements.controlObj = controlObj;
     }
+    
+    // Remove element if it already exists
+    function removeIfAlreadyExists(name, elemToRemove) {
+        if ($(name)[0]) {
+            $(elemToRemove).remove()
+        }
+    }
+    
+    // Send List
+    function sendList(whatSend) {
+        removeIfAlreadyExists('#s2cgeo-process', $('#s2cgeo-process'))
+        var alreadySend = 0;
+        $('.section-controls').after('<div id="s2cgeo-process"></div>')
+        // Send selected
+        if (whatSend == 'selected') {
+            var caches = $.find('.geocache-table tbody tr');
+            $(caches).each(
+                function() {
+                    if ($(this).find('.gc-checkbox').hasClass('checked')) {
+                        var text = $(this).find('.geocache-code').text().split('|');
+                        var GCCode = text[1].trim();
+                        $(this).attr('s2cgeo-send', GCCode)
+                    }
+                }
+            );
+        }
+        
+        // Sending
+        var cachesToSend = $('[s2cgeo-send]');
+        function sendCache(c) {
+            var GCCode = $(cachesToSend[c]).attr('s2cgeo-send')
+            $(cachesToSend[c]).find('.s2cgeo').html('<iframe name="' + GCCode + '" src=\"https://send2.cgeo.org/add.html?cache=' + GCCode + '\" width="80" height="55">');
+            alreadySend++;
+            $('#s2cgeo-process').html(alreadySend + '/' + cachesToSend.length + ' caches sent')
+            if (c+1 < cachesToSend.length) {
+                window.setTimeout(
+                    function () {
+                        sendCache(c+1)
+                    },
+                    100
+                )
+            }
+        }
+        sendCache(0)
+    }
 
     // Defines the elements to insert into the page //////////////////////////////
     var boxWidth = 20,
@@ -289,14 +334,12 @@ function s2cgGCMain() {
                     // Insert s2cgeo
                     if (document.querySelector('.cache-preview-action-menu')) {
                         var GCCode = $('.cache-metadata-code').html();
-                        // Break when a button with the GCCode alrady exist
+                        // Break when a button with the GCCode already exist
                         if (document.getElementById('s2cg-' + GCCode)) {
                             return;
                         }
                         // Remove button when the GCCode has change
-                        if (document.querySelector('.cache-preview-action-menu ul .s2cg')) {
-                            $('.s2cg').remove();
-                        }
+                        removeIfAlreadyExists('.cache-preview-action-menu ul .s2cg', $('.s2cg'));
                         // Add s2cg button.
                         var html = '<li class="s2cg"><a id="s2cg-' + GCCode + '" href="javascript:void(0);" title="Send to c:geo">'
                             + '<img class="action-icon" src="https://send2.cgeo.org/send2cgeo.png" />'
@@ -435,18 +478,28 @@ function s2cgGCMain() {
         function addButtons() {
             // stop observing during adding the buttons
             observer.disconnect();
-            if ($('#s2cgeoHead')[0]) {
-                $('#s2cgeoHead').parent().remove();
+            
+            if ($('.multi-select-action-bar')[0]) {
+                removeIfAlreadyExists('#s2cgeo-selected', $('#s2cgeo-selected'))
+                $('.multi-select-action-bar-count-section').after('<a id="s2cgeo-selected" href="javascript:void(0);">'
+                    + '    <img src="https://send2.cgeo.org/send2cgeo.png" title="Send to c:geo" height="29px" />'
+                    + '</a>');
+                $('#s2cgeo-selected').on('click', function() {
+                    sendList('selected');
+                });
             }
+
             $('body').find('.geocache-table thead th.header-geocache-name').before('<th><img id="s2cgeoHead" src="https://send2.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" /></th>');
+            removeIfAlreadyExists('#s2cgeoHead', $('#s2cgeoHead').parent());
             $('.geocache-table tbody tr').each(
                 function() {
-                    var text = $(this).find('.geocache-code').text().split('|')
-                    var GCCode = text[1].trim()
-                    if ($('#s2cgeo-' + GCCode)[0]) {
-                        $('#s2cgeo-' + GCCode).parent().remove();
+                    if ($(this).find('iframe')[0]) {
+                        return;
                     }
-                    var html = '<td><a id="s2cgeo-' + GCCode + '" href="javascript:void(0);">'
+                    var text = $(this).find('.geocache-code').text().split('|');
+                    var GCCode = text[1].trim();
+                    removeIfAlreadyExists('#s2cgeo-' + GCCode, $('#s2cgeo-' + GCCode).parent());
+                    var html = '<td class="s2cgeo"><a id="s2cgeo-' + GCCode + '" href="javascript:void(0);">'
                         + '    <img src="https://send2.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" />'
                         + '</a></td>';
                     $(this).find('td.cell-geocache-name').before(html);
