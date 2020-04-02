@@ -474,7 +474,7 @@ function s2cgGCMain() {
         };
         let observer = new MutationObserver(cb);
         observer.observe(target, config);
-
+    
         function addButtons() {
             // stop observing during adding the buttons
             observer.disconnect();
@@ -488,7 +488,7 @@ function s2cgGCMain() {
                     sendList('selected');
                 });
             }
-			
+            
             removeIfAlreadyExists('.header-s2cgeo', $('.header-s2cgeo'));
             $('body').find('.geocache-table thead th.header-geocache-name').before('<th class="header-s2cgeo"><img src="https://send2.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" /></th>');
             $('.geocache-table tbody tr').each(
@@ -504,25 +504,25 @@ function s2cgGCMain() {
                         + '</a></td>';
                     $(this).find('td.cell-geocache-name').before(html);
 
-					// Because jQuery is not supported by the list page, the window.s2geo() function does not work.
-					// The following function is a workaround to solve this problem.
-					$('#s2cgeo-' + GCCode).bind('click', function() {
-						// show the box and the "please wait" text
-						$("#send2cgeo, #send2cgeo div").fadeIn();
-						// hide iframe for now and wait for page to be loaded
-						$("#send2cgeo iframe")
-							.hide()
-							.off('load')
-							.attr('src', 'https://send2.cgeo.org/add.html?cache=' + GCCode)
-							.on('load',
-								function() {
-									// hide "please wait text" and show iframe
-									$("#send2cgeo div").hide();
-									// hide box after 3 seconds
-									$(this).css('display', 'block').parent().delay(3000).fadeOut();
-								}
-							);
-					});
+                    // Because jQuery is not supported by the list page, the window.s2geo() function does not work.
+                    // The following function is a workaround to solve this problem.
+                    $('#s2cgeo-' + GCCode).bind('click', function() {
+                        // show the box and the "please wait" text
+                        $("#send2cgeo, #send2cgeo div").fadeIn();
+                        // hide iframe for now and wait for page to be loaded
+                        $("#send2cgeo iframe")
+                            .hide()
+                            .off('load')
+                            .attr('src', 'https://send2.cgeo.org/add.html?cache=' + GCCode)
+                            .on('load',
+                                function() {
+                                    // hide "please wait text" and show iframe
+                                    $("#send2cgeo div").hide();
+                                    // hide box after 3 seconds
+                                    $(this).css('display', 'block').parent().delay(3000).fadeOut();
+                                }
+                            );
+                    });
                 }
             );
             // continue observing
@@ -531,7 +531,7 @@ function s2cgGCMain() {
     }
 
 // This function add the send2cgeo buttons on opencaching.de
-	// Send to c:geo on viewcache
+    // Send to c:geo on viewcache
     if(document.location.href.match(/\.de\/viewcache\.php/)) {
         var oc = document.getElementsByClassName('exportlist')[0].parentNode.parentNode;
         var occode = document.title;
