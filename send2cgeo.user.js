@@ -403,7 +403,7 @@ function s2cgGCMain() {
         $('.BorderTop th').first().after('<th><img src="https://send2.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" /></th>')
         $('.Data.BorderTop').each(
             function() {
-                var text = $(this).find(".Merge").last().find(".small").first().text().split("|");
+                var text = $(this).find(".Merge").last().find("span.small").first().text().split("|");
                 var GCCode = text[text.length - 2].trim();
                 var html = '<td><a href="javascript:void(0);" onclick="window.s2geo(\'' + GCCode + '\'); return false;">'
                     + '    <img src="https://send2.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" />'
