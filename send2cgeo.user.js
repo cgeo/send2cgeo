@@ -488,9 +488,9 @@ function s2cgGCMain() {
                     sendList('selected');
                 });
             }
-
-            $('body').find('.geocache-table thead th.header-geocache-name').before('<th><img id="s2cgeoHead" src="https://send2.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" /></th>');
-            removeIfAlreadyExists('#s2cgeoHead', $('#s2cgeoHead').parent());
+			
+            removeIfAlreadyExists('.header-s2cgeo', $('.header-s2cgeo'));
+            $('body').find('.geocache-table thead th.header-geocache-name').before('<th class="header-s2cgeo"><img src="https://send2.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" /></th>');
             $('.geocache-table tbody tr').each(
                 function() {
                     if ($(this).find('iframe')[0]) {
