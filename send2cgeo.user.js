@@ -8,6 +8,7 @@
 // @include        /^https?://www\.geocaching\.com/seek/(cache_details\.|nearest\.|)/
 // @include        /^https?://www\.geocaching\.com/my/recentlyviewedcaches\./
 // @include        /^https?://www\.geocaching\.com/(map/|geocache/)/
+// @include        /^https?://www\.geocaching\.com/plan/lists/
 // @include        /^https?://www\.opencaching\.de/viewcache.php/
 // @icon           https://send2.cgeo.org/send2cgeo.png
 // @downloadURL    https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
@@ -391,8 +392,8 @@ function s2cgGCMain() {
         var GCCode = $("#ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode").html();
 
         var html2 = '<dt><a href="javascript:void(0);" onclick="window.s2geo(\'' + GCCode + '\'); return false;">'
-			+ '<img src="https://send2.cgeo.org/send2cgeo.png" title="Send to c:geo" height="16px" />'
-			+ '<span>Send to c:geo</span></a></dt>';
+            + '<img src="https://send2.cgeo.org/send2cgeo.png" title="Send to c:geo" height="16px" />'
+            + '<span>Send to c:geo</span></a></dt>';
 
         $("#Download dd:last").append(html2);
 
@@ -413,6 +414,68 @@ function s2cgGCMain() {
         );
     }
 
+    if (document.location.href.match(/\.com\/plan\/lists\/BM/)) {
+        // observer callback
+        let cb = function() {
+            // add buttons if table has been loaded
+            if ($('div.footer-pagination-container').length > 0) {
+                addButtons();
+            }
+        }
+
+        // observe body for changes of child nodes
+        let target = $('body')[0];
+        let config = {
+            childList: true,
+            subtree: true
+        };
+        let observer = new MutationObserver(cb);
+        observer.observe(target, config);
+
+        function addButtons() {
+            // stop observing during adding the buttons
+            observer.disconnect();
+            if ($('#s2cgeoHead')[0]) {
+                $('#s2cgeoHead').parent().remove();
+            }
+            $('body').find('.geocache-table thead th.header-geocache-name').before('<th><img id="s2cgeoHead" src="https://send2.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" /></th>');
+            $('.geocache-table tbody tr').each(
+                function() {
+                    var text = $(this).find('.geocache-code').text().split('|')
+                    var GCCode = text[1].trim()
+                    if ($('#s2cgeo-' + GCCode)[0]) {
+                        $('#s2cgeo-' + GCCode).parent().remove();
+                    }
+                    var html = '<td><a id="s2cgeo-' + GCCode + '" href="javascript:void(0);">'
+                        + '    <img src="https://send2.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" />'
+                        + '</a></td>';
+                    $(this).find('td.cell-geocache-name').before(html);
+
+					// Because jQuery is not supported by the list page, the window.s2geo() function does not work.
+					// The following function is a workaround to solve this problem.
+					$('#s2cgeo-' + GCCode).bind('click', function() {
+						// show the box and the "please wait" text
+						$("#send2cgeo, #send2cgeo div").fadeIn();
+						// hide iframe for now and wait for page to be loaded
+						$("#send2cgeo iframe")
+							.hide()
+							.off('load')
+							.attr('src', 'https://send2.cgeo.org/add.html?cache=' + GCCode)
+							.on('load',
+								function() {
+									// hide "please wait text" and show iframe
+									$("#send2cgeo div").hide();
+									// hide box after 3 seconds
+									$(this).css('display', 'block').parent().delay(3000).fadeOut();
+								}
+							);
+					});
+                }
+            );
+            // continue observing
+            observer.observe(target, config);
+        }
+    }
 
 // This function add the send2cgeo buttons on opencaching.de
 	// Send to c:geo on viewcache
@@ -428,7 +491,6 @@ function s2cgGCMain() {
 
         oc.innerHTML = oc.innerHTML.replace('</p>', html);
     }
-
 }
 
 start(this);
