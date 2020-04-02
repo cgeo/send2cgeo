@@ -437,7 +437,7 @@ function s2cgGCMain() {
             if ($('#s2cgeoHead')[0]) {
                 $('#s2cgeoHead').parent().remove();
             }
-            $('body').find('.geocache-table thead th').first().after('<th><img id="s2cgeoHead" src="https://send2.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" /></th>');
+            $('body').find('.geocache-table thead th.header-geocache-name').before('<th><img id="s2cgeoHead" src="https://send2.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" /></th>');
             $('.geocache-table tbody tr').each(
                 function() {
                     var text = $(this).find('.geocache-code').text().split('|')
@@ -448,7 +448,7 @@ function s2cgGCMain() {
                     var html = '<td><a id="s2cgeo-' + GCCode + '" href="javascript:void(0);" onclick="window.s2geo(\'' + GCCode + '\'); return false;">'
                         + '    <img src="https://send2.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" />'
                         + '</a></td>';
-                    $(this).find('td').first().after(html);
+                    $(this).find('td.cell-geocache-name').before(html);
                 }
             );
             // continue observing
