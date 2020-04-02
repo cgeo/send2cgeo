@@ -443,13 +443,33 @@ function s2cgGCMain() {
                 function() {
                     var text = $(this).find('.geocache-code').text().split('|')
                     var GCCode = text[1].trim()
-                    if ($('#s2cgeoHead')[0]) {
+                    if ($('#s2cgeo-' + GCCode)[0]) {
                         $('#s2cgeo-' + GCCode).parent().remove();
                     }
-                    var html = '<td><a id="s2cgeo-' + GCCode + '" href="javascript:void(0);" onclick="window.s2geo(\'' + GCCode + '\'); return false;">'
+                    var html = '<td><a id="s2cgeo-' + GCCode + '" href="javascript:void(0);">'
                         + '    <img src="https://send2.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" />'
                         + '</a></td>';
                     $(this).find('td.cell-geocache-name').before(html);
+
+					// Because jQuery is not supported by the list page, the window.s2geo() function does not work.
+					// The following function is a workaround to solve this problem.
+					$('#s2cgeo-' + GCCode).bind('click', function() {
+						// show the box and the "please wait" text
+						$("#send2cgeo, #send2cgeo div").fadeIn();
+						// hide iframe for now and wait for page to be loaded
+						$("#send2cgeo iframe")
+							.hide()
+							.off('load')
+							.attr('src', 'https://send2.cgeo.org/add.html?cache=' + GCCode)
+							.on('load',
+								function() {
+									// hide "please wait text" and show iframe
+									$("#send2cgeo div").hide();
+									// hide box after 3 seconds
+									$(this).css('display', 'block').parent().delay(3000).fadeOut();
+								}
+							);
+					});
                 }
             );
             // continue observing
