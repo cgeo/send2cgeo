@@ -14,7 +14,7 @@
 // @downloadURL    https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
 // @updateURL      https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
 // @supportURL     https://github.com/cgeo/send2cgeo/issues
-// @version        0.49
+// @version        0.50
 // ==/UserScript==
 
 // Function that handles the actual sending
