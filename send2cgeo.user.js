@@ -496,6 +496,12 @@ function s2cgGCMain() {
                     if ($(this).find('iframe')[0]) {
                         return;
                     }
+                    if (!$(this).find('.geocache-code')[0]) { // return if there is a comment for the cache
+                        if (!$(this).find('.s2cg')[0]) {
+                            $(this).find('.cache-description').before('<td class="s2cg"></td>');
+                        }
+                        return;
+                    }
                     var text = $(this).find('.geocache-code').text().split('|');
                     var GCCode = text[1].trim();
                     removeIfAlreadyExists('#s2cgeo-' + GCCode, $('#s2cgeo-' + GCCode).parent());
