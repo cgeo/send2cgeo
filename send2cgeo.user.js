@@ -329,14 +329,14 @@ function s2cgGCMain() {
             // hide iframe for now and wait for page to be loaded
             $("#send2cgeo iframe")
                 .hide()
-                .off('load')
-                .attr('src', 'https://send2.cgeo.org/add.html?cache=' + GCCode)
-                .on('load',
+                .off("load")
+                .attr("src", "https://send2.cgeo.org/add.html?cache=" + GCCode)
+                .on("load",
                     function() {
                         // hide "please wait text" and show iframe
                         $("#send2cgeo div").hide();
                         // hide box after 3 seconds
-                        $(this).css('display', 'block').parent().delay(3000).fadeOut();
+                        $(this).css("display", "block").parent().delay(3000).fadeOut();
                     }
                 );
         });
