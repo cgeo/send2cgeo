@@ -6,7 +6,7 @@
 // @require        http://code.jquery.com/jquery-3.4.1.min.js
 // @include        /^https?://www\.geocaching\.com/play/(search|map)/
 // @include        /^https?://www\.geocaching\.com/play/owner/(published|unpublished|archived)/
-// @include        /^https?://www\.geocaching\.com/play/owner/(published|unpublished|archived)/event/
+// @include        /^https?://www\.geocaching\.com/play/owner/(published|unpublished|archived)/events/
 // @include        /^https?://www\.geocaching\.com/seek/(cache_details\.|nearest\.|)/
 // @include        /^https?://www\.geocaching\.com/my/recentlyviewedcaches\./
 // @include        /^https?://www\.geocaching\.com/(map/|geocache/)/
