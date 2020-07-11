@@ -313,34 +313,34 @@ function s2cgGCMain() {
         + '</div>');
 
 // This function add the send2cgeo buttons on geocaching.com
-	// Because jQuery is not supported by some pages, the window.s2geo() function does not work.
-	// The following function is a workaround to solve this problem.
-	function buildButton(GCCode, anchorElement, height, imgClass='') {
-		// Add s2cg button.
-		var html = '<a id="s2cg-' + GCCode + '" href="javascript:void(0);" title="Send to c:geo">'
-			+ '<img class="' + imgClass + '" src="https://send2.cgeo.org/send2cgeo.png" height="' + height + '"/>'
-			+ '</a>';
-		
-		$(anchorElement).append(html);
+    // Because jQuery is not supported by some pages, the window.s2geo() function does not work.
+    // The following function is a workaround to solve this problem.
+    function buildButton(GCCode, anchorElement, height, imgClass='') {
+        // Add s2cg button.
+        var html = '<a id="s2cg-' + GCCode + '" href="javascript:void(0);" title="Send to c:geo">'
+            + '<img class="' + imgClass + '" src="https://send2.cgeo.org/send2cgeo.png" height="' + height + '"/>'
+            + '</a>';
 
-		$('#s2cg-' + GCCode).on('click', function() {
-			// show the box and the "please wait" text
-			$("#send2cgeo, #send2cgeo div").fadeIn();
-			// hide iframe for now and wait for page to be loaded
-			$("#send2cgeo iframe")
-				.hide()
-				.off('load')
-				.attr('src', 'https://send2.cgeo.org/add.html?cache=' + GCCode)
-				.on('load',
-					function() {
-						// hide "please wait text" and show iframe
-						$("#send2cgeo div").hide();
-						// hide box after 3 seconds
-						$(this).css('display', 'block').parent().delay(3000).fadeOut();
-					}
-				);
-		});
-	}
+        $(anchorElement).append(html);
+
+        $('#s2cg-' + GCCode).on('click', function() {
+            // show the box and the "please wait" text
+            $("#send2cgeo, #send2cgeo div").fadeIn();
+            // hide iframe for now and wait for page to be loaded
+            $("#send2cgeo iframe")
+                .hide()
+                .off('load')
+                .attr('src', 'https://send2.cgeo.org/add.html?cache=' + GCCode)
+                .on('load',
+                    function() {
+                        // hide "please wait text" and show iframe
+                        $("#send2cgeo div").hide();
+                        // hide box after 3 seconds
+                        $(this).css('display', 'block').parent().delay(3000).fadeOut();
+                    }
+                );
+        });
+    }
 
     // Send to c:geo on browsemap (old map)
     if (document.location.href.match(/\.com\/map/)) {
@@ -358,8 +358,8 @@ function s2cgGCMain() {
 
     // Send to c:geo on seachmap (new map)
     if (document.location.href.match(/\.com\/play\/map/)) {
-		// Remove the pedding for the ul
-		$('head').append('<style type="text/css">.cache-preview-action-menu ul {padding: 0;}</style>')
+        // Remove the pedding for the ul
+        $('head').append('<style type="text/css">.cache-preview-action-menu ul {padding: 0;}</style>')
         // Build mutation observer for body
         function buildObserverBodySearchMap() {
             var observerBodySearchMap = new MutationObserver(function (mutations) {
@@ -371,11 +371,11 @@ function s2cgGCMain() {
                         if (document.getElementById('s2cg-' + GCCode)) {
                             return;
                         }
-						// Remove button when the GCCode has change
-						removeIfAlreadyExists('.cache-preview-action-menu ul li.s2cg', $('li.s2cg'));
-						$('.cache-preview-action-menu ul').append('<li class="s2cg"></li>');
+                        // Remove button when the GCCode has change
+                        removeIfAlreadyExists('.cache-preview-action-menu ul li.s2cg', $('li.s2cg'));
+                        $('.cache-preview-action-menu ul').append('<li class="s2cg"></li>');
                         buildButton(GCCode, $('li.s2cg'), '25px', 'action-icon');
-						$('li.s2cg a').append('<span>Send to c:geo</span>');
+                        $('li.s2cg a').append('<span>Send to c:geo</span>');
                     }
                 });
             });
@@ -409,7 +409,6 @@ function s2cgGCMain() {
             }
         }
         checkForBuildObserverBodySearchMap(0);
-
     }
 
     // Send to c:geo on new seachpage
@@ -449,7 +448,6 @@ function s2cgGCMain() {
             + '<span>Send to c:geo</span></a></dt>';
 
         $("#Download dd:last").append(html2);
-
     }
 
     // Send to c:geo on recentlyviewed and nearest list
@@ -518,10 +516,54 @@ function s2cgGCMain() {
 
                     removeIfAlreadyExists('#s2cg-' + GCCode, $('#s2cg-' + GCCode).parent());
 
-					$(this).find('td.cell-geocache-name').before('<td class="s2cgeo"></td>');
-					buildButton(GCCode, $(this).find('td.s2cgeo'), '20px');
-				}
-			);
+                    $(this).find('td.cell-geocache-name').before('<td class="s2cgeo"></td>');
+                    buildButton(GCCode, $(this).find('td.s2cgeo'), '20px');
+                }
+            );
+            // continue observing
+            observer.observe(target, config);
+        }
+    }
+
+    if (document.location.href.match(/\.com\/play\/owner/)) {
+        // observer callback
+        let cb = function() {
+            // add buttons if table has been loaded
+            if ($('.section-controls').length > 0) {
+                addButtons();
+            }
+        }
+
+        // observe body for changes of child nodes
+        let target = $('body')[0];
+        let config = {
+            childList: true,
+            subtree: true
+        };
+        let observer = new MutationObserver(cb);
+        observer.observe(target, config);
+
+        function addButtons() {
+            // stop observing during adding the buttons
+            observer.disconnect();
+
+            removeIfAlreadyExists('.header-s2cgeo', $('.header-s2cgeo'));
+            $('.geocache-table thead th.header-name').before('<th class="header-s2cgeo"><img src="https://send2.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" /></th>');
+
+            $('.geocache-table tbody tr').each(
+                function() {
+                    var text = $(this).find('.geocache-details').text().split('|');
+                    text = text[0].trim();
+                    var GCCode = text.substr(0, text.length-3).trim();
+                    console.log(GCCode);
+
+                    removeIfAlreadyExists('#s2cg-' + GCCode, $('#s2cg-' + GCCode).parent());
+
+                    $(this).find('td.name-display').before('<td class="s2cgeo"></td>');
+                    buildButton(GCCode, $(this).find('td.s2cgeo'), '20px');
+                }
+            );
+
             // continue observing
             observer.observe(target, config);
         }
