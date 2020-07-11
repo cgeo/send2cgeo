@@ -5,6 +5,8 @@
 // @author         c:geo team and contributors
 // @require        http://code.jquery.com/jquery-3.4.1.min.js
 // @include        /^https?://www\.geocaching\.com/play/(search|map)/
+// @include        /^https?://www\.geocaching\.com/play/owner/(published|unpublished|archived)/
+// @include        /^https?://www\.geocaching\.com/play/owner/(published|unpublished|archived)/event/
 // @include        /^https?://www\.geocaching\.com/seek/(cache_details\.|nearest\.|)/
 // @include        /^https?://www\.geocaching\.com/my/recentlyviewedcaches\./
 // @include        /^https?://www\.geocaching\.com/(map/|geocache/)/
@@ -311,6 +313,35 @@ function s2cgGCMain() {
         + '</div>');
 
 // This function add the send2cgeo buttons on geocaching.com
+	// Because jQuery is not supported by some pages, the window.s2geo() function does not work.
+	// The following function is a workaround to solve this problem.
+	function buildButton(GCCode, anchorElement, height, imgClass='') {
+		// Add s2cg button.
+		var html = '<a id="s2cg-' + GCCode + '" href="javascript:void(0);" title="Send to c:geo">'
+			+ '<img class="' + imgClass + '" src="https://send2.cgeo.org/send2cgeo.png" height="' + height + '"/>'
+			+ '</a>';
+		
+		$(anchorElement).append(html);
+
+		$('#s2cg-' + GCCode).on('click', function() {
+			// show the box and the "please wait" text
+			$("#send2cgeo, #send2cgeo div").fadeIn();
+			// hide iframe for now and wait for page to be loaded
+			$("#send2cgeo iframe")
+				.hide()
+				.off('load')
+				.attr('src', 'https://send2.cgeo.org/add.html?cache=' + GCCode)
+				.on('load',
+					function() {
+						// hide "please wait text" and show iframe
+						$("#send2cgeo div").hide();
+						// hide box after 3 seconds
+						$(this).css('display', 'block').parent().delay(3000).fadeOut();
+					}
+				);
+		});
+	}
+
     // Send to c:geo on browsemap (old map)
     if (document.location.href.match(/\.com\/map/)) {
         var template = $("#cacheDetailsTemplate").html();
@@ -327,6 +358,8 @@ function s2cgGCMain() {
 
     // Send to c:geo on seachmap (new map)
     if (document.location.href.match(/\.com\/play\/map/)) {
+		// Remove the pedding for the ul
+		$('head').append('<style type="text/css">.cache-preview-action-menu ul {padding: 0;}</style>')
         // Build mutation observer for body
         function buildObserverBodySearchMap() {
             var observerBodySearchMap = new MutationObserver(function (mutations) {
@@ -338,34 +371,11 @@ function s2cgGCMain() {
                         if (document.getElementById('s2cg-' + GCCode)) {
                             return;
                         }
-                        // Remove button when the GCCode has change
-                        removeIfAlreadyExists('.cache-preview-action-menu ul .s2cg', $('.s2cg'));
-                        // Add s2cg button.
-                        var html = '<li class="s2cg"><a id="s2cg-' + GCCode + '" href="javascript:void(0);" title="Send to c:geo">'
-                            + '<img class="action-icon" src="https://send2.cgeo.org/send2cgeo.png" />'
-                            + '<span>Send to c:geo</span>'
-                            + '</a></li>'
-                        $('.more-info-li').before(html);
-
-                        // Because jQuery is not supported by the Search Map, the window.s2geo() function does not work.
-                        // The following function is a workaround to solve this problem.
-                        $('#s2cg-' + GCCode).bind('click', function() {
-                            // show the box and the "please wait" text
-                            $("#send2cgeo, #send2cgeo div").fadeIn();
-                            // hide iframe for now and wait for page to be loaded
-                            $("#send2cgeo iframe")
-                                .hide()
-                                .off('load')
-                                .attr('src', 'https://send2.cgeo.org/add.html?cache=' + GCCode)
-                                .on('load',
-                                    function() {
-                                        // hide "please wait text" and show iframe
-                                        $("#send2cgeo div").hide();
-                                        // hide box after 3 seconds
-                                        $(this).css('display', 'block').parent().delay(3000).fadeOut();
-                                    }
-                                );
-                        });
+						// Remove button when the GCCode has change
+						removeIfAlreadyExists('.cache-preview-action-menu ul li.s2cg', $('li.s2cg'));
+						$('.cache-preview-action-menu ul').append('<li class="s2cg"></li>');
+                        buildButton(GCCode, $('li.s2cg'), '25px', 'action-icon');
+						$('li.s2cg a').append('<span>Send to c:geo</span>');
                     }
                 });
             });
@@ -490,41 +500,28 @@ function s2cgGCMain() {
             }
 
             removeIfAlreadyExists('.header-s2cgeo', $('.header-s2cgeo'));
-            $('body').find('.geocache-table thead th.header-geocache-name').before('<th class="header-s2cgeo"><img src="https://send2.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" /></th>');
+            $('.geocache-table thead th.header-geocache-name').before('<th class="header-s2cgeo"><img src="https://send2.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" /></th>');
+
             $('.geocache-table tbody tr').each(
                 function() {
                     if ($(this).find('iframe')[0]) {
                         return;
                     }
+                    if (!$(this).find('.geocache-code')[0]) { // return if there is a comment for the cache
+                        if (!$(this).find('.s2cg')[0]) {
+                            $(this).find('.cache-description').before('<td class="s2cg"></td>');
+                        }
+                        return;
+                    }
                     var text = $(this).find('.geocache-code').text().split('|');
                     var GCCode = text[1].trim();
-                    removeIfAlreadyExists('#s2cgeo-' + GCCode, $('#s2cgeo-' + GCCode).parent());
-                    var html = '<td class="s2cgeo"><a id="s2cgeo-' + GCCode + '" href="javascript:void(0);">'
-                        + '    <img src="https://send2.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" />'
-                        + '</a></td>';
-                    $(this).find('td.cell-geocache-name').before(html);
 
-                    // Because jQuery is not supported by the list page, the window.s2geo() function does not work.
-                    // The following function is a workaround to solve this problem.
-                    $('#s2cgeo-' + GCCode).bind('click', function() {
-                        // show the box and the "please wait" text
-                        $("#send2cgeo, #send2cgeo div").fadeIn();
-                        // hide iframe for now and wait for page to be loaded
-                        $("#send2cgeo iframe")
-                            .hide()
-                            .off('load')
-                            .attr('src', 'https://send2.cgeo.org/add.html?cache=' + GCCode)
-                            .on('load',
-                                function() {
-                                    // hide "please wait text" and show iframe
-                                    $("#send2cgeo div").hide();
-                                    // hide box after 3 seconds
-                                    $(this).css('display', 'block').parent().delay(3000).fadeOut();
-                                }
-                            );
-                    });
-                }
-            );
+                    removeIfAlreadyExists('#s2cg-' + GCCode, $('#s2cg-' + GCCode).parent());
+
+					$(this).find('td.cell-geocache-name').before('<td class="s2cgeo"></td>');
+					buildButton(GCCode, $(this).find('td.s2cgeo'), '20px');
+				}
+			);
             // continue observing
             observer.observe(target, config);
         }
