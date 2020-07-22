@@ -312,7 +312,7 @@ function s2cgGCMain() {
         + '<iframe style="' + iframeStyle + '"></iframe>'
         + '</div>');
 
-// This function add the send2cgeo buttons on geocaching.com
+    // This function add the send2cgeo buttons on geocaching.com
     // Because jQuery is not supported by some pages, the window.s2geo() function does not work.
     // The following function is a workaround to solve this problem.
     function buildButton(GCCode, anchorElement, height, imgClass='') {
@@ -358,7 +358,7 @@ function s2cgGCMain() {
 
     // Send to c:geo on seachmap (new map)
     if (document.location.href.match(/\.com\/play\/map/)) {
-        // Remove the pedding for the ul
+        // Remove the padding for the ul
         $('head').append('<style type="text/css">.cache-preview-action-menu ul {padding: 0;}</style>')
         // Build mutation observer for body
         function buildObserverBodySearchMap() {
