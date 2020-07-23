@@ -295,23 +295,6 @@ function s2cgGCMain() {
         sendCache(0)
     }
 
-    // Defines the elements to insert into the page //////////////////////////////
-    var boxWidth = 20,
-        boxHeight = 7;
-
-    var boxStyle = 'display:none; background:#1D1D1D; z-index:1010; left:50%; '
-        + 'box-shadow:0 0 0.5em #000; padding:0; border:0; '
-        + 'position:fixed; top:0.5em;  text-align:center; '
-        + 'margin-left:-' + (boxWidth/2) + 'em; line-height:' + boxHeight + 'em; '
-        + 'width:' + boxWidth + 'em; height:' + boxHeight + 'em; color: #fff';
-    var waitStyle = 'width: ' + boxWidth + 'em; color: #fff';
-    var iframeStyle = 'border:0; width:' + boxWidth + 'em; height: ' + boxHeight + 'em';
-
-    $("body").append('<div id="send2cgeo" style="' + boxStyle + '">'
-        + '<div style="' + waitStyle + '">Please wait&hellip;</div>'
-        + '<iframe style="' + iframeStyle + '"></iframe>'
-        + '</div>');
-
     // This function add the send2cgeo buttons on geocaching.com
     // Because jQuery is not supported by some pages, the window.s2geo() function does not work.
     // The following function is a workaround to solve this problem.
@@ -341,6 +324,23 @@ function s2cgGCMain() {
                 );
         });
     }
+
+    // Defines the elements to insert into the page //////////////////////////////
+    var boxWidth = 20,
+        boxHeight = 7;
+
+    var boxStyle = 'display:none; background:#1D1D1D; z-index:1010; left:50%; '
+        + 'box-shadow:0 0 0.5em #000; padding:0; border:0; '
+        + 'position:fixed; top:0.5em;  text-align:center; '
+        + 'margin-left:-' + (boxWidth/2) + 'em; line-height:' + boxHeight + 'em; '
+        + 'width:' + boxWidth + 'em; height:' + boxHeight + 'em; color: #fff';
+    var waitStyle = 'width: ' + boxWidth + 'em; color: #fff';
+    var iframeStyle = 'border:0; width:' + boxWidth + 'em; height: ' + boxHeight + 'em';
+
+    $("body").append('<div id="send2cgeo" style="' + boxStyle + '">'
+        + '<div style="' + waitStyle + '">Please wait&hellip;</div>'
+        + '<iframe style="' + iframeStyle + '"></iframe>'
+        + '</div>');
 
     // Send to c:geo on browsemap (old map)
     if (document.location.href.match(/\.com\/map/)) {
