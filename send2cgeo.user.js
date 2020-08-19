@@ -8,15 +8,18 @@
 // @include        /^https?://www\.geocaching\.com/play/owner/(published|unpublished|archived)/
 // @include        /^https?://www\.geocaching\.com/play/owner/(published|unpublished|archived)/events/
 // @include        /^https?://www\.geocaching\.com/seek/(cache_details\.|nearest\.|)/
-// @include        /^https?://www\.geocaching\.com/my/recentlyviewedcaches\./
+// @include        /^https?://www\.geocaching\.com/my/(recentlyviewedcaches|default)\./
 // @include        /^https?://www\.geocaching\.com/(map/|geocache/)/
 // @include        /^https?://www\.geocaching\.com/plan/lists/
-// @include        /^https?://www\.opencaching\.de/viewcache.php/
+// @include        /^https?://www\.geocaching\.com/account/dashboard/
+// @include        /^https?://www\.opencaching\.de/(viewcache|myhome).php/
 // @icon           https://send2.cgeo.org/send2cgeo.png
 // @downloadURL    https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
 // @updateURL      https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
 // @supportURL     https://github.com/cgeo/send2cgeo/issues
 // @version        0.51
+// @grant          GM_setValue
+// @grant          GM_getValue
 // ==/UserScript==
 
 // Function that handles the actual sending
@@ -25,20 +28,29 @@ var s2cgScript = document.createElement('script');
 s2cgScript.type = 'text/javascript';
 s2cgScript.innerHTML = 'window.s2geo = function(GCCode) {'
     // show the box and the "please wait" text
-    + '$("#send2cgeo, #send2cgeo div").fadeIn();'
-    // hide iframe for now and wait for page to be loaded
-    + '$("#send2cgeo iframe")'
-    + '   .hide()'
-    + '   .off("load")'
-    + '   .attr("src", "https://send2.cgeo.org/add.html?cache=" + GCCode)'
-    + '   .on("load",'
-    + '       function() {'
-                  // hide "please wait text" and show iframe
-    + '           $("#send2cgeo div").hide();'
-                  // hide box after 3 seconds
-    + '           $(this).css("display", "block").parent().delay(3000).fadeOut();'
-    + '       }'
-    + '   );'
+    + (isUseWithoutThirdPartyCookies()
+        ? "    var sendCache = window.open('https://send2.cgeo.org/add.html?cache=' + GCCode, 'send' + GCCode, 'width=200,height=100,top=10,left=10,menubar=no,status=no');"
+        + '    window.setTimeout('
+        + '        function() {'
+        + '            sendCache.close();'
+        + '        },'
+        + '        3000'
+        + '    )'
+        : '$("#send2cgeo, #send2cgeo div").fadeIn();'
+        // hide iframe for now and wait for page to be loaded
+        + '$("#send2cgeo iframe")'
+        + '   .hide()'
+        + '   .off("load")'
+        + '   .attr("src", "https://send2.cgeo.org/add.html?cache=" + GCCode)'
+        + '   .on("load",'
+        + '       function() {'
+                      // hide "please wait text" and show iframe
+        + '           $("#send2cgeo div").hide();'
+                      // hide box after 3 seconds
+        + '           $(this).css("display", "block").parent().delay(3000).fadeOut();'
+        + '       }'
+        + '   );'
+    )
     + '};';
 
 document.getElementsByTagName('head')[0].appendChild(s2cgScript);
@@ -146,6 +158,10 @@ var start = function(c) {
             s2cgGCMain();
         });
 };
+
+function isUseWithoutThirdPartyCookies() {
+    return GM_getValue('useWithoutThirdPartyCookies', false);
+}
 
 function s2cgGCMain() {
     // check for premium membership (parts of the page content are different)
@@ -278,15 +294,26 @@ function s2cgGCMain() {
 
         // Sending
         var cachesToSend = $('[s2cgeo-send]');
-        function sendCache(c) {
-            var GCCode = $(cachesToSend[c]).attr('s2cgeo-send');
-            $(cachesToSend[c]).find('.s2cgeo').html('<iframe name="' + GCCode + '" src=\"https://send2.cgeo.org/add.html?cache=' + GCCode + '\" width="80" height="55">');
+        function sendCache(i) {
+            var GCCode = $(cachesToSend[i]).attr('s2cgeo-send');
+            if (isUseWithoutThirdPartyCookies()) {
+                var padding = i%10 * 30 + 10;
+                let sendCache = window.open('https://send2.cgeo.org/add.html?cache=' + GCCode, 'send' + GCCode, 'width=200,height=100,top=' + padding +',left=' + padding + ',menubar=no,status=no');
+                window.setTimeout(
+                    function() {
+                        sendCache.close();
+                    },
+                    900
+                );
+            } else {
+                $(cachesToSend[i]).find('.s2cgeo').html('<iframe name="' + GCCode + '" src=\"https://send2.cgeo.org/add.html?cache=' + GCCode + '\" width="80" height="55">');
+            }
             alreadySend++;
             $('#s2cgeo-process').html(alreadySend + '/' + cachesToSend.length + ' caches sent');
-            if (c+1 < cachesToSend.length) {
+            if (i+1 < cachesToSend.length) {
                 window.setTimeout(
                     function () {
-                        sendCache(c+1);
+                        sendCache(i+1);
                     },
                     100
                 )
@@ -298,30 +325,40 @@ function s2cgGCMain() {
     // This function add the send2cgeo buttons on geocaching.com
     // Because jQuery is not supported by some pages, the window.s2geo() function does not work.
     // The following function is a workaround to solve this problem.
-    function buildButton(GCCode, anchorElement, height, imgClass='') {
+    function buildButton(GCCode, anchor, height, imgClass='') {
         // Add s2cg button.
         var html = '<a id="s2cg-' + GCCode + '" href="javascript:void(0);" title="Send to c:geo">'
             + '<img class="' + imgClass + '" src="https://send2.cgeo.org/send2cgeo.png" height="' + height + '"/>'
             + '</a>';
 
-        $(anchorElement).append(html);
+        $(anchor).append(html);
 
         $('#s2cg-' + GCCode).on('click', function() {
-            // show the box and the "please wait" text
-            $("#send2cgeo, #send2cgeo div").fadeIn();
-            // hide iframe for now and wait for page to be loaded
-            $("#send2cgeo iframe")
-                .hide()
-                .off("load")
-                .attr("src", "https://send2.cgeo.org/add.html?cache=" + GCCode)
-                .on("load",
+            if (isUseWithoutThirdPartyCookies()) {
+                var sendCache = window.open('https://send2.cgeo.org/add.html?cache=' + GCCode, 'send' + GCCode, 'width=200,height=100,top=10,left=10,menubar=no,status=no');
+                window.setTimeout(
                     function() {
-                        // hide "please wait text" and show iframe
-                        $("#send2cgeo div").hide();
-                        // hide box after 3 seconds
-                        $(this).css("display", "block").parent().delay(3000).fadeOut();
-                    }
+                        sendCache.close();
+                    },
+                    3000
                 );
+            } else {
+                // show the box and the "please wait" text
+                $("#send2cgeo, #send2cgeo div").fadeIn();
+                // hide iframe for now and wait for page to be loaded
+                $("#send2cgeo iframe")
+                    .hide()
+                    .off("load")
+                    .attr("src", "https://send2.cgeo.org/add.html?cache=" + GCCode)
+                    .on("load",
+                        function() {
+                            // hide "please wait text" and show iframe
+                            $("#send2cgeo div").hide();
+                            // hide box after 3 seconds
+                            $(this).css("display", "block").parent().delay(3000).fadeOut();
+                        }
+                    );
+            }
         });
     }
 
@@ -342,6 +379,7 @@ function s2cgGCMain() {
         + '<iframe style="' + iframeStyle + '"></iframe>'
         + '</div>');
 
+// This function add the send2cgeo buttons on geocaching.com
     // Send to c:geo on browsemap (old map)
     if (document.location.href.match(/\.com\/map/)) {
         var template = $("#cacheDetailsTemplate").html();
@@ -555,7 +593,6 @@ function s2cgGCMain() {
                     var text = $(this).find('.geocache-details').text().split('|');
                     text = text[0].trim();
                     var GCCode = text.substr(0, text.length-3).trim();
-                    console.log(GCCode);
 
                     removeIfAlreadyExists('#s2cg-' + GCCode, $('#s2cg-' + GCCode).parent());
 
@@ -582,6 +619,187 @@ function s2cgGCMain() {
             + '</p>';
 
         oc.innerHTML = oc.innerHTML.replace('</p>', html);
+    }
+
+// This will add settings
+    function save_settings() {
+        GM_setValue('useWithoutThirdPartyCookies', $('#useWithoutThirdPartyCookies').is(':checked'));
+    }
+
+    function buildToggle(id, label, info='') {
+        return '<div class="s2cg_toggle">'
+             + '    <label>' + label
+             + '        <input type="checkbox" id="' + id + '"' + (GM_getValue(id, false) ? ' checked' : '') + '><span class="slider"></span>'
+             + '    </label>'
+             + (info != ''
+                ? '    <label for="' + id + '_info" class="s2cg_infoBtn"> ?</label>'
+                + '    <input type="checkbox" id="' + id + '_info" class="s2cg_info">'
+                + '    <div class="s2cg_info">' + info + '</div>'
+                : '')
+             + '</div>'
+    }
+
+    // Long info text
+    var thirdPartyCookiesInfo = 'Chrome blocks third-party cookies by default, because they <b>can be</b> malicious. '
+                              + 'You can also block third-party cookies in other browsers.<br>"Send to c:geo" uses '
+                              + 'cookies on geocaching.com and opencaching.de and is therefore a third-party cookie.'
+                              + '<br>With this option, the cookies are not set via the geocaching.com and opencaching.de '
+                              + 'pages, but in a pop-up window so that you can continue to use "Send to c:geo".<br>'
+                              + '<b>Attention: Sending multiple Caches does not work on the search page </b>'
+                              + '(https://www.geocaching.com/play/search)';
+
+    var settingsHTML = '<div id="send2cgeo_settings" style="display:none;">'
+                     + '    <div id="s2cg_settings_content">'
+                     + '        <div id="s2cg_settings_header">'
+                     + '            <h1>Send to c:geo settings</h1>'
+                     + '        </div>'
+                     // Add options
+                     + buildToggle('useWithoutThirdPartyCookies', 'Use Send to c:geo without third-party cookies', thirdPartyCookiesInfo)
+                     // Save-Button
+                     + '            <input type="button" id="send2cgeo_settings_submit" value="Save">'
+                     + '    </div>'
+                     + '</div>';
+
+    var settingsCSS = '#send2cgeo_settings {'
+                    + '    position: fixed;'
+                    + '    background: rgba(31, 31, 31, .7);'
+                    + '    top: 0;'
+                    + '    left: 0;'
+                    + '    width: 100%;'
+                    + '    height: 100%;'
+                    + '    z-index: 1111;'
+                    + '    color: #fff;'
+                    + '}'
+
+                    + '#s2cg_settings_content {'
+                    + '    position: absolute;'
+                    + '    top: 50%;'
+                    + '    left: 50%;'
+                    + '    width: 60%;'
+                    + '    -webkit-transform: translate(-50%, -50%);'
+                    + '    -ms-transform: translate(-50%, -50%);'
+                    + '    transform: translate(-50%, -50%);'
+                    + '    background: rgba(31, 31, 31, 1);'
+                    + '    padding: 1em;'
+                    + '    border-radius: 1em;'
+                    + '}'
+
+                    + '#s2cg_settings_content p, .s2cg_toggle label, #send2cgeo_settings_submit {'
+                    + '    font-size: ' + (document.location.href.match(/\.de\/myhome\.php/) ? '1.5' : '1') + 'em !important;'
+                    + '}'
+
+                    + '#send2cgeo_settings_submit {'
+                    + '    margin-top: 1em;'
+                    + '    color: rgba(31, 31, 31, 1);'
+                    + '    border-radius: 5px;'
+                    + '    cursor: pointer;'
+                    + '    padding: 0 8px;'
+                    + '}'
+
+                    + '.s2cg_toggle {'
+                    + '    padding-left: 1em;'
+                    + '}'
+
+                    + '.s2cg_toggle label {'
+                    + '    position: relative;'
+                    + '    display: inline-block;'
+                    + '    text-transform: none;'
+                    + '}'
+
+                    + '.s2cg_toggle input {'
+                    + '    display: none;'
+                    + '}'
+
+                    + '.s2cg_toggle .slider {'
+                    + '    position: absolute;'
+                    + '    cursor: pointer;'
+                    + '    margin-left: .5em;'
+                    + '    width: 2em;'
+                    + '    height: 1em;'
+                    + '    background: #c32e04; /* red */'
+                    + '    transition: all .3s ease-in-out;'
+                    + '    border-radius: 1em;'
+                    + '}'
+
+                    + '.s2cg_toggle .slider:before {'
+                    + '    position: absolute;'
+                    + '    content: "";'
+                    + '    height: .6em;'
+                    + '    width: .6em;'
+                    + '    left: .2em;'
+                    + '    bottom: .2em;'
+                    + '    background: white;'
+                    + '    border-radius: 50%;'
+                    + '    transition: all .3s ease-in-out;'
+                    + '}'
+
+                    + '.s2cg_toggle input:checked + .slider {'
+                    + '    background: #5a9900; /* green */'
+                    + '}'
+
+                    + '.s2cg_toggle input:checked + .slider:before {'
+                    + '    -webkit-transform: translateX(1em);'
+                    + '    -ms-transform: translateX(1em);'
+                    + '    transform: translateX(1em);'
+                    + '}'
+
+                    + '.s2cg_info {'
+                    + '    display: none;'
+                    + '}'
+
+                    + 'input.s2cg_info:checked + div.s2cg_info {'
+                    + '    display: block;'
+                    + '}'
+
+                    + 'div.s2cg_info {'
+                    + '    margin: 0 0 1em 1.5em;'
+                    + '}'
+
+                    + '.s2cg_infoBtn {'
+                    + '    cursor:pointer;'
+                    + '    margin-left:3em;'
+                    + '    border:2px solid #fff;'
+                    + '    border-radius:50%;'
+                    + '    width: 1.5em;'
+                    + '    height: 1.5em;'
+                    + '    padding-left: .3em;'
+                    + '    font-weight: bold;'
+                    + '    box-sizing: border-box;'
+                    + '}'
+
+                    + '.s2cg_infoBtn:hover {'
+                    + '    background: #9f9f9f;'
+                    + '}';
+
+    if (document.location.href.match(/\.com\/account\/dashboard/) || document.location.href.match(/\.com\/my\/default.aspx/) || document.location.href.match(/\.de\/myhome\.php/)) {
+        $('head').append('<style>' + settingsCSS + '</style>');
+        $('body').append(settingsHTML);
+        // geocaching.com
+        // new Dashboard
+        if (document.location.href.match(/\.com\/account\/dashboard/)) {
+            $('.bio-meta').append('<a id="s2cg_openSettings" href="javascript:void(0)" style="display:block;">Send to c:geo settings</a>');
+        }
+        // new Dashboard
+        if (document.location.href.match(/\.com\/my\/default.aspx/)) {
+            $('#ctl00_ContentBody_WidgetMiniProfile1_memberProfileLink').parent().append(' | <a id="s2cg_openSettings" href="javascript:void(0)">Send to c:geo settings</a>');
+        }
+        // opencaching.de
+        if (document.location.href.match(/\.de\/myhome\.php/)) {
+        $('.content2-pagetitle').after('<div class="content2-container bg-blue02" style="margin-top:20px;">'
+                                       + '    <p class="content-title-noshade-size3">'
+                                       + '        <img src="https://send2.cgeo.org/send2cgeo.png" style="margin-right:10px;" height="22px" />'
+                                       + '        Send to c:geo <span class="content-title-link"><a id="s2cg_openSettings" href="javascript:void(0)">Settings</a></span>'
+                                       + '    </p>'
+                                       + '</div>');
+        }
+        // Open and Save settings
+        $('#s2cg_openSettings').on('click', function() {
+            $('#send2cgeo_settings').css('display', 'unset');
+        });
+        $('#send2cgeo_settings_submit').on('click', function() {
+            save_settings();
+            $('#send2cgeo_settings').css('display', 'none');
+        });
     }
 }
 
