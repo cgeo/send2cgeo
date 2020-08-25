@@ -13,11 +13,11 @@
 // @include        /^https?://www\.geocaching\.com/plan/lists/
 // @include        /^https?://www\.geocaching\.com/account/dashboard/
 // @include        /^https?://www\.opencaching\.de/(viewcache|myhome).php/
-// @icon           https://send2.cgeo.org/send2cgeo.png
+// @icon           https://www.cgeo.org/send2cgeo.png
 // @downloadURL    https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
 // @updateURL      https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
 // @supportURL     https://github.com/cgeo/send2cgeo/issues
-// @version        0.51
+// @version        0.52
 // @grant          GM_setValue
 // @grant          GM_getValue
 // ==/UserScript==
