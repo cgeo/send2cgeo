@@ -200,7 +200,7 @@ function s2cgGCMain() {
         var html = '<td class="mobile-show" >'
             + '<a id="s2cg-' + GCCode + '" href="https://send2.cgeo.org/add.html?cache=' + GCCode + '" '
             + "onclick='window.s2geo(\"" + GCCode + "\"); return false;' send2cgeo_gccode='" + GCCode + "'>"
-            + '<img height="50" src="https://send2.cgeo.org/send2cgeo.png" '
+            + '<img height="50" src="https://www.cgeo.org/send2cgeo.png" '
             + 'border="0"> '
             + '</a></td>';
 
@@ -328,7 +328,7 @@ function s2cgGCMain() {
     function buildButton(GCCode, anchor, height, imgClass='') {
         // Add s2cg button.
         var html = '<a id="s2cg-' + GCCode + '" href="javascript:void(0);" title="Send to c:geo">'
-            + '<img class="' + imgClass + '" src="https://send2.cgeo.org/send2cgeo.png" height="' + height + '"/>'
+            + '<img class="' + imgClass + '" src="https://www.cgeo.org/send2cgeo.png" height="' + height + '"/>'
             + '</a>';
 
         $(anchor).append(html);
@@ -384,7 +384,7 @@ function s2cgGCMain() {
     if (document.location.href.match(/\.com\/map/)) {
         var template = $("#cacheDetailsTemplate").html();
         var html = '<a href="javascript:void(0);" onclick="window.s2geo(\'{{=gc}}\'); return false;">'
-            + '<img height="16px" src="https://send2.cgeo.org/send2cgeo.png" />'
+            + '<img height="16px" src="https://www.cgeo.org/send2cgeo.png" />'
             + '<span>Send to c:geo</span></a>';
 
         var searchpos = template.indexOf('/images/icons/16/write_log.png');
@@ -481,8 +481,8 @@ function s2cgGCMain() {
     if (document.location.href.match(/\.com\/(seek\/cache_details\.aspx|geocache\/)/)) {
         var GCCode = $("#ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode").html();
 
-        var html2 = '<dt><a href="javascript:void(0);" onclick="window.s2geo(\'' + GCCode + '\'); return false;">'
-            + '<img src="https://send2.cgeo.org/send2cgeo.png" title="Send to c:geo" height="16px" />'
+        var html2 = '<dt><a href="javascript:void(0);" onclick="window.s2geo(\'' + GCCode + '\'); return false;" style="display:flex;">'
+            + '<img src="https://www.cgeo.org/send2cgeo.png" title="Send to c:geo" height="16px" />'
             + '<span>Send to c:geo</span></a></dt>';
 
         $("#Download dd:last").append(html2);
@@ -490,19 +490,20 @@ function s2cgGCMain() {
 
     // Send to c:geo on recentlyviewed and nearest list
     if (document.location.href.match(/\.com\/seek\/nearest\.aspx/) || document.location.href.match(/\.com\/my\/recentlyviewedcaches\.aspx/)) {
-        $('.BorderTop th').first().after('<th><img src="https://send2.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" /></th>');
+        $('.BorderTop th').first().after('<th><img src="https://www.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" /></th>');
         $('.Data.BorderTop').each(
             function() {
                 var text = $(this).find(".Merge").last().find("span.small").first().text().split("|");
                 var GCCode = text[text.length - 2].trim();
                 var html = '<td><a href="javascript:void(0);" onclick="window.s2geo(\'' + GCCode + '\'); return false;">'
-                    + '    <img src="https://send2.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" />'
+                    + '    <img src="https://www.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" />'
                     + '</a></td>';
                 $(this).find('td').first().after(html);
             }
         );
     }
 
+    // Send to c:geo on new List / new BML
     if (document.location.href.match(/\.com\/plan\/lists\/BM/)) {
         // observer callback
         let cb = function() {
@@ -528,7 +529,7 @@ function s2cgGCMain() {
             if ($('.multi-select-action-bar')[0]) {
                 removeIfAlreadyExists('#s2cgeo-selected', $('#s2cgeo-selected'));
                 $('.multi-select-action-bar-count-section').after('<a id="s2cgeo-selected" href="javascript:void(0);">'
-                    + '    <img src="https://send2.cgeo.org/send2cgeo.png" title="Send to c:geo" height="29px" />'
+                    + '    <img src="https://www.cgeo.org/send2cgeo.png" title="Send to c:geo" height="45px" style="margin-right:8px" />'
                     + '</a>');
                 $('#s2cgeo-selected').on('click', function() {
                     sendList('selected');
@@ -536,7 +537,7 @@ function s2cgGCMain() {
             }
 
             removeIfAlreadyExists('.header-s2cgeo', $('.header-s2cgeo'));
-            $('.geocache-table thead th.header-geocache-name').before('<th class="header-s2cgeo"><img src="https://send2.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" /></th>');
+            $('.geocache-table thead th.header-geocache-name').before('<th class="header-s2cgeo"><img src="https://www.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" /></th>');
 
             $('.geocache-table tbody tr').each(
                 function() {
@@ -586,7 +587,7 @@ function s2cgGCMain() {
             observer.disconnect();
 
             removeIfAlreadyExists('.header-s2cgeo', $('.header-s2cgeo'));
-            $('.geocache-table thead th.header-name').before('<th class="header-s2cgeo"><img src="https://send2.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" /></th>');
+            $('.geocache-table thead th.header-name').before('<th class="header-s2cgeo"><img src="https://www.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" /></th>');
 
             $('.geocache-table tbody tr').each(
                 function() {
@@ -613,8 +614,8 @@ function s2cgGCMain() {
         var occode = document.title;
         occode = occode.substring(0, occode.indexOf(" ", 0));
 
-        var html = '<img src="https://send2.cgeo.org/send2cgeo.png" height="16px" />'
-            + '<a href="javascript:void(0);" onclick="window.s2geo(\'' + occode + '\'); return false;" >'
+        var html = '<img src="https://www.cgeo.org/send2cgeo.png" height="16px" />'
+            + '<a href="javascript:void(0);" onclick="window.s2geo(\'' + occode + '\'); return false;" >&nbsp;'
             + '<input class="exportbutton" type="button" value="An c:geo senden" title="Send to c:geo" /></a> '
             + '</p>';
 
@@ -787,7 +788,7 @@ function s2cgGCMain() {
         if (document.location.href.match(/\.de\/myhome\.php/)) {
         $('.content2-pagetitle').after('<div class="content2-container bg-blue02" style="margin-top:20px;">'
                                        + '    <p class="content-title-noshade-size3">'
-                                       + '        <img src="https://send2.cgeo.org/send2cgeo.png" style="margin-right:10px;" height="22px" />'
+                                       + '        <img src="https://www.cgeo.org/send2cgeo.png" style="margin-right:10px;" height="22px" />'
                                        + '        Send to c:geo <span class="content-title-link"><a id="s2cg_openSettings" href="javascript:void(0)">Settings</a></span>'
                                        + '    </p>'
                                        + '</div>');
