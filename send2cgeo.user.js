@@ -17,7 +17,7 @@
 // @downloadURL    https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
 // @updateURL      https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
 // @supportURL     https://github.com/cgeo/send2cgeo/issues
-// @version        0.52
+// @version        2020.08.26
 // @grant          GM_setValue
 // @grant          GM_getValue
 // ==/UserScript==
