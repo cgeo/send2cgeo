@@ -275,9 +275,7 @@ function s2cgGCMain() {
 
     // Send List
     function sendList(whatSend) {
-        removeIfAlreadyExists('#s2cgeo-process', $('#s2cgeo-process'));
         var alreadySend = 0;
-        $('.section-controls').after('<div id="s2cgeo-process"></div>');
         // Send selected
         if (whatSend == 'selected') {
             var caches = $.find('.geocache-table tbody tr');
@@ -286,16 +284,16 @@ function s2cgGCMain() {
                     if ($(this).find('.gc-checkbox').hasClass('checked')) {
                         var text = $(this).find('.geocache-code').text().split('|');
                         var GCCode = text[1].trim();
-                        $(this).attr('s2cgeo-send', GCCode);
+                        $(this).attr('s2cg-send', GCCode);
                     }
                 }
             );
         }
 
         // Sending
-        var cachesToSend = $('[s2cgeo-send]');
+        var cachesToSend = (whatSend == 'multiple' ? $('#s2cg_send_input').val().match(/(GC|OC)[A-Z0-9]{1,6}/gi) : $('[s2cg-send]'));
         function sendCache(i) {
-            var GCCode = $(cachesToSend[i]).attr('s2cgeo-send');
+            var GCCode = (whatSend == 'multiple' ? cachesToSend[i] : $(cachesToSend[i]).attr('s2cg-send'));
             if (isUseWithoutThirdPartyCookies()) {
                 var padding = i%10 * 30 + 10;
                 let sendCache = window.open('https://send2.cgeo.org/add.html?cache=' + GCCode, 'send' + GCCode, 'width=200,height=100,top=' + padding +',left=' + padding + ',menubar=no,status=no');
@@ -306,10 +304,15 @@ function s2cgGCMain() {
                     900
                 );
             } else {
-                $(cachesToSend[i]).find('.s2cgeo').html('<iframe name="' + GCCode + '" src=\"https://send2.cgeo.org/add.html?cache=' + GCCode + '\" width="80" height="55">');
+                let iframe = '<iframe name="' + GCCode + '" src=\"https://send2.cgeo.org/add.html?cache=' + GCCode + '\" width="80" height="55">'
+                if (whatSend == 'multiple') {
+                    $('#s2cg_send_frames').append(iframe)
+                } else {
+                    $(cachesToSend[i]).find('.s2cg').html(iframe);
+                }
             }
             alreadySend++;
-            $('#s2cgeo-process').html(alreadySend + '/' + cachesToSend.length + ' caches sent');
+            $('#s2cg_send_process').html(alreadySend + '/' + cachesToSend.length + ' caches sent');
             if (i+1 < cachesToSend.length) {
                 window.setTimeout(
                     function () {
@@ -317,9 +320,16 @@ function s2cgGCMain() {
                     },
                     100
                 )
+            } else {
+                // The last cache was sent.
+                if (whatSend == 'multiple') {
+                    $('#s2cg_send_input').text('');
+                }
             }
         }
-        sendCache(0)
+        if (cachesToSend != null) {
+            sendCache(0);
+        }
     }
 
     // This function add the send2cgeo buttons on geocaching.com
@@ -402,7 +412,7 @@ function s2cgGCMain() {
         function buildObserverBodySearchMap() {
             var observerBodySearchMap = new MutationObserver(function (mutations) {
                 mutations.forEach(function(mutation) {
-                    // Insert s2cgeo
+                    // Insert s2cg
                     if (document.querySelector('.cache-preview-action-menu')) {
                         var GCCode = $('.cache-metadata-code').html();
                         // Break when a button with the GCCode already exist
@@ -527,17 +537,20 @@ function s2cgGCMain() {
             observer.disconnect();
 
             if ($('.multi-select-action-bar')[0]) {
-                removeIfAlreadyExists('#s2cgeo-selected', $('#s2cgeo-selected'));
-                $('.multi-select-action-bar-count-section').after('<a id="s2cgeo-selected" href="javascript:void(0);">'
+                removeIfAlreadyExists('#s2cg_selected', $('#s2cg_selected'));
+                $('.multi-select-action-bar-count-section').after('<a id="s2cg_selected" href="javascript:void(0);">'
                     + '    <img src="https://www.cgeo.org/send2cgeo.png" title="Send to c:geo" height="45px" style="margin-right:8px" />'
                     + '</a>');
-                $('#s2cgeo-selected').on('click', function() {
+                $('#s2cg_selected').on('click', function() {
                     sendList('selected');
                 });
+                if (!$('#s2cg_send_process')[0] || $('#s2cg_send_process').html() == '') {
+                    $('.section-controls').after('<div id="s2cg_send_process"></div>');
+                }
             }
 
-            removeIfAlreadyExists('.header-s2cgeo', $('.header-s2cgeo'));
-            $('.geocache-table thead th.header-geocache-name').before('<th class="header-s2cgeo"><img src="https://www.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" /></th>');
+            removeIfAlreadyExists('.header-s2cg', $('.header-s2cg'));
+            $('.geocache-table thead th.header-geocache-name').before('<th class="header-s2cg"><img src="https://www.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" /></th>');
 
             $('.geocache-table tbody tr').each(
                 function() {
@@ -555,8 +568,8 @@ function s2cgGCMain() {
 
                     removeIfAlreadyExists('#s2cg-' + GCCode, $('#s2cg-' + GCCode).parent());
 
-                    $(this).find('td.cell-geocache-name').before('<td class="s2cgeo"></td>');
-                    buildButton(GCCode, $(this).find('td.s2cgeo'), '20px');
+                    $(this).find('td.cell-geocache-name').before('<td class="s2cg"></td>');
+                    buildButton(GCCode, $(this).find('td.s2cg'), '20px');
                 }
             );
             // continue observing
@@ -586,8 +599,8 @@ function s2cgGCMain() {
             // stop observing during adding the buttons
             observer.disconnect();
 
-            removeIfAlreadyExists('.header-s2cgeo', $('.header-s2cgeo'));
-            $('.geocache-table thead th.header-name').before('<th class="header-s2cgeo"><img src="https://www.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" /></th>');
+            removeIfAlreadyExists('.header-s2cg', $('.header-s2cg'));
+            $('.geocache-table thead th.header-name').before('<th class="header-s2cg"><img src="https://www.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" /></th>');
 
             $('.geocache-table tbody tr').each(
                 function() {
@@ -597,8 +610,8 @@ function s2cgGCMain() {
 
                     removeIfAlreadyExists('#s2cg-' + GCCode, $('#s2cg-' + GCCode).parent());
 
-                    $(this).find('td.name-display').before('<td class="s2cgeo"></td>');
-                    buildButton(GCCode, $(this).find('td.s2cgeo'), '20px');
+                    $(this).find('td.name-display').before('<td class="s2cg"></td>');
+                    buildButton(GCCode, $(this).find('td.s2cg'), '20px');
                 }
             );
 
@@ -622,6 +635,15 @@ function s2cgGCMain() {
         oc.innerHTML = oc.innerHTML.replace('</p>', html);
     }
 
+// Bild a s2cg popup
+    var popupHTML = '<div id="s2cg_popup" style="display:none;">'
+                  + '    <div id="s2cg_popup_content">'
+                  + '    </div>'
+                  + '</div>';
+
+    function closePupup() {
+        $('#s2cg_popup').css('display', 'none');
+    }
 // This will add settings
     function save_settings() {
         GM_setValue('useWithoutThirdPartyCookies', $('#useWithoutThirdPartyCookies').is(':checked'));
@@ -633,7 +655,7 @@ function s2cgGCMain() {
              + '        <input type="checkbox" id="' + id + '"' + (GM_getValue(id, false) ? ' checked' : '') + '><span class="slider"></span>'
              + '    </label>'
              + (info != ''
-                ? '    <label for="' + id + '_info" class="s2cg_infoBtn"> ?</label>'
+                ? '    <label for="' + id + '_info" class="s2cg_btn_info"> ?</label>'
                 + '    <input type="checkbox" id="' + id + '_info" class="s2cg_info">'
                 + '    <div class="s2cg_info">' + info + '</div>'
                 : '')
@@ -649,19 +671,27 @@ function s2cgGCMain() {
                               + '<b>Attention: Sending multiple Caches does not work on the search page </b>'
                               + '(https://www.geocaching.com/play/search)';
 
-    var settingsHTML = '<div id="send2cgeo_settings" style="display:none;">'
-                     + '    <div id="s2cg_settings_content">'
-                     + '        <div id="s2cg_settings_header">'
-                     + '            <h1>Send to c:geo settings</h1>'
-                     + '        </div>'
-                     // Add options
-                     + buildToggle('useWithoutThirdPartyCookies', 'Use Send to c:geo without third-party cookies', thirdPartyCookiesInfo)
-                     // Save-Button
-                     + '            <input type="button" id="send2cgeo_settings_submit" value="Save">'
-                     + '    </div>'
-                     + '</div>';
+    function getSettingsHTML() {
+        return '<div id="s2cg_popup_close">X</div>'
+             + '<div id="s2cg_popup_header">'
+             + '    <h1>Send to c:geo settings</h1>'
+             + '</div>'
+             // Add options
+             + buildToggle('useWithoutThirdPartyCookies', 'Use Send to c:geo without third-party cookies', thirdPartyCookiesInfo)
+             // Save-Button
+             + '<input type="button" id="s2cg_settings_submit" class="s2cg_btn_submit" value="Save">';
+    }
 
-    var settingsCSS = '#send2cgeo_settings {'
+    var sendMultipleHTML = '<div id="s2cg_popup_close">X</div>'
+                         + '<div id="s2cg_popup_header">'
+                         + '    <h1>Send Multiple Caches</h1>'
+                         + '</div>'
+                         + '<textarea id="s2cg_send_input"></textarea>'
+                         + '<div id="s2cg_send_process"></div>'
+                         + '<div id="s2cg_send_frames" style="display:none;"></div>'
+                         + '<input type="button" id="s2cg_send_submit" class="s2cg_btn_submit" value="Send">';
+
+    var settingsCSS = '#s2cg_popup {'
                     + '    position: fixed;'
                     + '    background: rgba(31, 31, 31, .7);'
                     + '    top: 0;'
@@ -671,8 +701,16 @@ function s2cgGCMain() {
                     + '    z-index: 1111;'
                     + '    color: #fff;'
                     + '}'
+                    
+                    + '#s2cg_popup_close {'
+                    + '    position:absolute;'
+                    + '    top:10px;'
+                    + '    right:10px;'
+                    + '    font-weight: bold;'
+                    + '    cursor: pointer;'
+                    + '}'
 
-                    + '#s2cg_settings_content {'
+                    + '#s2cg_popup_content {'
                     + '    position: absolute;'
                     + '    top: 50%;'
                     + '    left: 50%;'
@@ -685,11 +723,17 @@ function s2cgGCMain() {
                     + '    border-radius: 1em;'
                     + '}'
 
-                    + '#s2cg_settings_content p, .s2cg_toggle label, #send2cgeo_settings_submit {'
+                    + '#s2cg_send_input {'
+                    + '    color:#000;'
+                    + '    width:100%;'
+                    + '    min-height:200px;'
+                    + '}'
+
+                    + '#s2cg_popup_content p, .s2cg_toggle label, .s2cg_btn_submit, #s2cg_send_input, #s2cg_send_process, #s2cg_popup_close {'
                     + '    font-size: ' + (document.location.href.match(/\.de\/myhome\.php/) ? '1.5' : '1') + 'em !important;'
                     + '}'
 
-                    + '#send2cgeo_settings_submit {'
+                    + '.s2cg_btn_submit {'
                     + '    margin-top: 1em;'
                     + '    color: rgba(31, 31, 31, 1);'
                     + '    border-radius: 5px;'
@@ -756,7 +800,7 @@ function s2cgGCMain() {
                     + '    margin: 0 0 1em 1.5em;'
                     + '}'
 
-                    + '.s2cg_infoBtn {'
+                    + '.s2cg_btn_info {'
                     + '    cursor:pointer;'
                     + '    margin-left:3em;'
                     + '    border:2px solid #fff;'
@@ -768,38 +812,49 @@ function s2cgGCMain() {
                     + '    box-sizing: border-box;'
                     + '}'
 
-                    + '.s2cg_infoBtn:hover {'
+                    + '.s2cg_btn_info:hover {'
                     + '    background: #9f9f9f;'
                     + '}';
 
     if (document.location.href.match(/\.com\/account\/dashboard/) || document.location.href.match(/\.com\/my\/default.aspx/) || document.location.href.match(/\.de\/myhome\.php/)) {
         $('head').append('<style>' + settingsCSS + '</style>');
-        $('body').append(settingsHTML);
+        $('body').append(popupHTML);
         // geocaching.com
         // new Dashboard
         if (document.location.href.match(/\.com\/account\/dashboard/)) {
-            $('.bio-meta').append('<a id="s2cg_openSettings" href="javascript:void(0)" style="display:block;">Send to c:geo settings</a>');
+            $('.bio-meta').append('<span style="display:block;">Send to c:geo <a id="s2cg_open_settings" href="javascript:void(0)">Settings</a> | <a id="s2cg_open_sendList" href="javascript:void(0)">Send List</a></span>');
         }
         // new Dashboard
         if (document.location.href.match(/\.com\/my\/default.aspx/)) {
-            $('#ctl00_ContentBody_WidgetMiniProfile1_memberProfileLink').parent().append(' | <a id="s2cg_openSettings" href="javascript:void(0)">Send to c:geo settings</a>');
+            $('#ctl00_ContentBody_WidgetMiniProfile1_memberProfileLink').parent().append(' | Send to c:geo <a id="s2cg_open_settings" href="javascript:void(0)">Settings</a> | <a id="s2cg_open_sendList" href="javascript:void(0)">Send List</a>');
         }
         // opencaching.de
         if (document.location.href.match(/\.de\/myhome\.php/)) {
         $('.content2-pagetitle').after('<div class="content2-container bg-blue02" style="margin-top:20px;">'
                                        + '    <p class="content-title-noshade-size3">'
                                        + '        <img src="https://www.cgeo.org/send2cgeo.png" style="margin-right:10px;" height="22px" />'
-                                       + '        Send to c:geo <span class="content-title-link"><a id="s2cg_openSettings" href="javascript:void(0)">Settings</a></span>'
+                                       + '        Send to c:geo <span class="content-title-link"><a id="s2cg_open_settings" href="javascript:void(0)">Settings</a> | <a id="s2cg_open_sendList" href="javascript:void(0)">Send List</a></span>'
                                        + '    </p>'
                                        + '</div>');
         }
         // Open and Save settings
-        $('#s2cg_openSettings').on('click', function() {
-            $('#send2cgeo_settings').css('display', 'unset');
+        $('#s2cg_open_settings').on('click', function() {
+            $('#s2cg_popup_content').html(getSettingsHTML());
+            $('#s2cg_popup').css('display', 'unset');
+            $('#s2cg_settings_submit').on('click', function() {
+                save_settings();
+                closePupup();
+            });
+            $('#s2cg_popup_close').on('click', closePupup);
         });
-        $('#send2cgeo_settings_submit').on('click', function() {
-            save_settings();
-            $('#send2cgeo_settings').css('display', 'none');
+        // Open and Send multiple caches
+        $('#s2cg_open_sendList').on('click', function() {
+            $('#s2cg_popup_content').html(sendMultipleHTML);
+            $('#s2cg_popup').css('display', 'unset');
+            $('#s2cg_send_submit').on('click', function() {
+                sendList('multiple');
+            });
+            $('#s2cg_popup_close').on('click', closePupup);
         });
     }
 }
