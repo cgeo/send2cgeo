@@ -12,7 +12,7 @@
 // @include        /^https?://www\.geocaching\.com/(map/|geocache/)/
 // @include        /^https?://www\.geocaching\.com/plan/lists/
 // @include        /^https?://www\.geocaching\.com/account/dashboard/
-// @include        /^https?://www\.opencaching\.de/(viewcache|myhome).php/
+// @include        /^https?://www\.opencaching\.de/(viewcache|myhome|map2).php/
 // @icon           https://www.cgeo.org/send2cgeo.png
 // @downloadURL    https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
 // @updateURL      https://github.com/cgeo/send2cgeo/raw/release/send2cgeo.user.js
@@ -616,10 +616,46 @@ function s2cgGCMain() {
 
         var html = '<img src="https://www.cgeo.org/send2cgeo.png" height="16px" />'
             + '<a href="javascript:void(0);" onclick="window.s2geo(\'' + occode + '\'); return false;" >&nbsp;'
-            + '<input class="exportbutton" type="button" value="An c:geo senden" title="Send to c:geo" /></a> '
+            + '<input class="exportbutton" type="button" value="An c:geo senden" title="An c:geo senden" /></a> '
             + '</p>';
 
         oc.innerHTML = oc.innerHTML.replace('</p>', html);
+    }
+
+    if (document.location.href.match(/\.de\/map2.php/)) {
+        function addButton() {
+            // stop observing during adding the buttons
+            observer.disconnect();
+
+            removeIfAlreadyExists('#s2cg', $('#s2cg'));
+
+            var row = ($('#mapinfowindow table.mappopup tr:nth-child(1) td')[2] ? 1 : 2);
+
+            var OCCode = $('#mapinfowindow table.mappopup tr:nth-child('+row+') td:nth-child(3) font b')[0].innerHTML.match(/OC[A-Z0-9]{1,6}/)[0];
+            $('#mapinfowindow table.mappopup tbody').append('<tr id="s2cg"><td colspan="3"></td></tr>');
+            buildButton(OCCode, $('#s2cg td'), '16px');
+            $('#s2cg td a').append('<span>An c:geo senden</span>')
+
+            // continue observing
+            observer.observe(target, config);
+        }
+
+        // observer callback
+        let cb = function() {
+            // add buttons if table has been loaded
+            if ($('#mapinfowindow table.mappopup tbody')[0] && !$('#s2cg')[0]) {
+                addButton();
+            }
+        }
+
+        // observe body for changes of child nodes
+        let target = $('body')[0];
+        let config = {
+            childList: true,
+            subtree: true
+        };
+        let observer = new MutationObserver(cb);
+        observer.observe(target, config);
     }
 
 // This will add settings
