@@ -396,57 +396,59 @@ function s2cgGCMain() {
 
     // Send to c:geo on seachmap (new map)
     if (document.location.href.match(/\.com\/play\/map/)) {
-        // Remove the padding for the ul
-        $('head').append('<style type="text/css">.cache-preview-action-menu ul {padding: 0;}</style>')
-        // Build mutation observer for body
-        function buildObserverBodySearchMap() {
-            var observerBodySearchMap = new MutationObserver(function (mutations) {
-                mutations.forEach(function(mutation) {
-                    // Insert s2cgeo
-                    if (document.querySelector('.cache-preview-action-menu')) {
-                        var GCCode = $('.cache-metadata-code').html();
-                        // Break when a button with the GCCode already exist
-                        if (document.getElementById('s2cg-' + GCCode)) {
-                            return;
-                        }
-                        // Remove button when the GCCode has change
-                        removeIfAlreadyExists('.cache-preview-action-menu ul li.s2cg', $('li.s2cg'));
-                        $('.cache-preview-action-menu ul').append('<li class="s2cg"></li>');
-                        buildButton(GCCode, $('li.s2cg'), '25px', 'action-icon');
-                        $('li.s2cg a').append('<span>Send to c:geo</span>');
-                    }
-                });
-            });
-            var target = document.querySelector('body');
-            var config = {
-                attributes: true,
-                childList: true,
-                characterData: true,
-            };
-            observerBodySearchMap.observe(target, config);
-        }
-
-        // Check if mutation observer for body can be build
-        function checkForBuildObserverBodySearchMap(waitCount) {
-            if ($('body')[0]) {
-                if ($('.s2cg_buildObserverBodySearchMap')[0]) {
+        function addButton() {
+            if (document.querySelector('.cache-preview-action-menu')) {
+                var GCCode = $('.cache-metadata-code').html();
+                // Break when a button with the GCCode already exist
+                if (document.getElementById('s2cg-' + GCCode)) {
                     return;
                 }
-                $('body').addClass('s2cg_buildObserverBodySearchMap');
-                buildObserverBodySearchMap();
-            } else {
-                waitCount++;
-                if (waitCount <= 200) {
-                    setTimeout(
-                        function() {
-                            checkForBuildObserverBodySearchMap(waitCount);
-                        },
-                        50
-                    );
-                }
+                // Remove button when the GCCode has change
+                removeIfAlreadyExists('.cache-preview-action-menu ul li.s2cg', $('li.s2cg'));
+                $('.cache-preview-action-menu ul').append('<li class="s2cg"></li>');
+                buildButton(GCCode, $('li.s2cg'), '25px', 'action-icon');
+                $('li.s2cg a').append('<span>Send to c:geo</span>');
             }
         }
-        checkForBuildObserverBodySearchMap(0);
+
+        // observer callback for checking existence of sidebar
+        var cb_body = function(mutationsList, observer) {
+            if ($('div#sidebar')[0] && !$('.s2cg_sidebar_observer')[0]) {
+                $('div#sidebar').addClass('s2cg_sidebar_observer');
+                // start observing sidebar for switches between search list and cache details view
+                var target_sidebar = $('div#sidebar')[0];
+                var config_sidebar = {
+                    childList: true,
+                    subtree: true
+                };
+                observer_sidebar.observe(target_sidebar, config_sidebar);
+            }
+        }
+
+        // observer callback when sidebar switches between search list and cache details view
+        var cb_sidebar = function(mutationsList, observer) {
+            observer_sidebar.disconnect();
+
+            addButton()
+
+            var target_sidebar = $('div#sidebar')[0];
+            var config_sidebar = {
+                childList: true,
+                subtree: true
+            };
+            observer_sidebar.observe(target_sidebar, config_sidebar);
+        }
+
+        // create observer instances linked to callback functions
+        var observer_body    = new MutationObserver(cb_body);
+        var observer_sidebar = new MutationObserver(cb_sidebar); // ATTENTION: the order matters here
+        
+        var target_body = $('body')[0];
+        var config_body = {
+            childList: true,
+            attributes: true
+        };
+        observer_body.observe(target_body, config_body);
     }
 
     // Send to c:geo on new seachpage
