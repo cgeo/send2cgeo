@@ -332,14 +332,6 @@ function s2cgGCMain() {
                         buildButton(GCCode, $('li.s2cg'), '25px', 'action-icon');
                         $('li.s2cg a').append('<span>Send to c:geo</span>');
                     }
-                    if ($('.leaflet-popup-content .cache-action-menu-view ul')[0]) {
-                        var list = $('.leaflet-popup-content .cache-action-menu-view ul')[0];
-                        var GCCode = list.innerHTML.match(/GC[A-Z0-9]{1,6}/g)[0];
-                        removeIfAlreadyExists('.leaflet-popup-content .cache-action-menu-view ul li.s2cg', $('li.s2cg.popup'));
-                        $(list).append('<li class="s2cg popup"></li>');
-                        buildButton(GCCode, $('li.s2cg'), '25px', 's2cg_hidden');
-                        $('li.s2cg a').append('<span>Send to c:geo</span>');
-                    }
                 });
             });
             var target = document.querySelector('body');
