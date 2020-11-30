@@ -317,11 +317,44 @@ function s2cgGCMain() {
 
     // Send to c:geo on seachmap (new map)
     if (document.location.href.match(/\.com\/play\/map/)) {
+<<<<<<< refs/remotes/upstream/master
         function addButton() {
             if (document.querySelector('.cache-preview-action-menu')) {
                 var GCCode = $('.cache-metadata-code').html();
                 // Break when a button with the GCCode already exist
                 if (document.getElementById('s2cg-' + GCCode)) {
+=======
+        // Remove the padding for the ul
+        $('head').append('<style type="text/css">.cache-preview-action-menu ul {padding: 0;}</style>');
+        // Build mutation observer for body
+        function buildObserverBodySearchMap() {
+            $('head').append('<style>.s2cg_hidden {display:none; visibility:hidden;}</style>');
+            var observerBodySearchMap = new MutationObserver(function (mutations) {
+                mutations.forEach(function(mutation) {
+                    // Insert s2cg
+                    if ($('.cache-preview-action-menu')[0]) {
+                        var GCCode = $('.cache-metadata-code').html();
+                        removeIfAlreadyExists('.cache-preview-action-menu ul li.s2cg', $('li.s2cg'));
+                        $('.cache-preview-action-menu ul').append('<li class="s2cg"></li>');
+                        buildButton(GCCode, $('li.s2cg'), '25px', 'action-icon');
+                        $('li.s2cg a').append('<span>Send to c:geo</span>');
+                    }
+                });
+            });
+            var target = document.querySelector('body');
+            var config = {
+                attributes: true,
+                childList: true,
+                characterData: true,
+            };
+            observerBodySearchMap.observe(target, config);
+        }
+
+        // Check if mutation observer for body can be build
+        function checkForBuildObserverBodySearchMap(waitCount) {
+            if ($('body')[0]) {
+                if ($('.s2cg_buildObserverBodySearchMap')[0]) {
+>>>>>>> remove function that does not work after changes by GS
                     return;
                 }
                 // Remove button when the GCCode has change
