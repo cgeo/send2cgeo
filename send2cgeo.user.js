@@ -280,8 +280,8 @@ function s2cgGCMain() {
         $('.section-controls').after('<div id="s2cgeo-process"></div>');
         // Send selected
         if (whatSend == 'selected') {
-            var caches = $.find('.geocache-table tbody tr');
-            $(caches).each(
+            var caches1 = $.find('.geocache-table tbody tr');
+            $(caches1).each(
                 function() {
                     if ($(this).find('.gc-checkbox').hasClass('checked')) {
                         var text = $(this).find('.geocache-code').text().split('|');
@@ -298,10 +298,10 @@ function s2cgGCMain() {
             var GCCode = $(cachesToSend[i]).attr('s2cgeo-send');
             if (isUseWithoutThirdPartyCookies()) {
                 var padding = i%10 * 30 + 10;
-                let sendCache = window.open('https://send2.cgeo.org/add.html?cache=' + GCCode, 'send' + GCCode, 'width=200,height=100,top=' + padding +',left=' + padding + ',menubar=no,status=no');
+                let sendCache1 = window.open('https://send2.cgeo.org/add.html?cache=' + GCCode, 'send' + GCCode, 'width=200,height=100,top=' + padding +',left=' + padding + ',menubar=no,status=no');
                 window.setTimeout(
                     function() {
-                        sendCache.close();
+                        sendCache1.close();
                     },
                     900
                 );
@@ -383,14 +383,14 @@ function s2cgGCMain() {
     // Send to c:geo on browsemap (old map)
     if (document.location.href.match(/\.com\/map/)) {
         var template = $("#cacheDetailsTemplate").html();
-        var html = '<a href="javascript:void(0);" onclick="window.s2geo(\'{{=gc}}\'); return false;">'
+        var html0 = '<a href="javascript:void(0);" onclick="window.s2geo(\'{{=gc}}\'); return false;">'
             + '<img height="16px" src="https://www.cgeo.org/send2cgeo.png" />'
             + '<span>Send to c:geo</span></a>';
 
         var searchpos = template.indexOf('/images/icons/16/write_log.png');
         var pos = template.indexOf('</a>', searchpos) + 4;
 
-        template = template.substring(0, pos) + html + template.substring(pos, template.length);
+        template = template.substring(0, pos) + html0 + template.substring(pos, template.length);
         $("#cacheDetailsTemplate").html(template);
     }
 
@@ -481,9 +481,9 @@ function s2cgGCMain() {
 
     // Send to c:geo on cache detail page
     if (document.location.href.match(/\.com\/(seek\/cache_details\.aspx|geocache\/)/)) {
-        var GCCode = $("#ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode").html();
+        var GCCode1 = $("#ctl00_ContentBody_CoordInfoLinkControl1_uxCoordInfoCode").html();
 
-        var html2 = '<dt><a href="javascript:void(0);" onclick="window.s2geo(\'' + GCCode + '\'); return false;" style="display:flex;">'
+        var html2 = '<dt><a href="javascript:void(0);" onclick="window.s2geo(\'' + GCCode1 + '\'); return false;" style="display:flex;">'
             + '<img src="https://www.cgeo.org/send2cgeo.png" title="Send to c:geo" height="16px" />'
             + '<span>Send to c:geo</span></a></dt>';
 
@@ -616,12 +616,12 @@ function s2cgGCMain() {
         var occode = document.title;
         occode = occode.substring(0, occode.indexOf(" ", 0));
 
-        var html = '<img src="https://www.cgeo.org/send2cgeo.png" height="16px" />'
+        var html1 = '<img src="https://www.cgeo.org/send2cgeo.png" height="16px" />'
             + '<a href="javascript:void(0);" onclick="window.s2geo(\'' + occode + '\'); return false;" >&nbsp;'
             + '<input class="exportbutton" type="button" value="An c:geo senden" title="An c:geo senden" /></a> '
             + '</p>';
 
-        oc.innerHTML = oc.innerHTML.replace('</p>', html);
+        oc.innerHTML = oc.innerHTML.replace('</p>', html1);
     }
 
     if (document.location.href.match(/\.de\/map2.php/)) {
