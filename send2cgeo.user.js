@@ -625,6 +625,15 @@ function s2cgGCMain() {
         oc.innerHTML = oc.innerHTML.replace('</p>', html);
     }
 
+// Bild a s2cg popup
+    var popupHTML = '<div id="s2cg_popup" style="display:none;">'
+                  + '    <div id="s2cg_popup_content">'
+                  + '    </div>'
+                  + '</div>';
+
+    function closePupup() {
+        $('#s2cg_popup').css('display', 'none');
+    }
 // This will add settings
     function save_settings() {
         GM_setValue('useWithoutThirdPartyCookies', $('#useWithoutThirdPartyCookies').is(':checked'));
