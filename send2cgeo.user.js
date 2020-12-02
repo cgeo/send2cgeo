@@ -289,7 +289,7 @@ function s2cgGCMain() {
 
     var boxStyle = 'display:none; background:#1D1D1D; z-index:1010; left:50%; '
         + 'box-shadow:0 0 0.5em #000; padding:0; border:0; '
-        + 'position:fixed; top:0.5em;  text-align:center; '
+        + 'position:fixed; top:6em;  text-align:center; '
         + 'margin-left:-' + (boxWidth/2) + 'em; line-height:' + boxHeight + 'em; '
         + 'width:' + boxWidth + 'em; height:' + boxHeight + 'em; color: #fff';
     var waitStyle = 'width: ' + boxWidth + 'em; color: #fff';
