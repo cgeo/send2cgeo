@@ -658,7 +658,6 @@ function s2cgGCMain() {
                               + 'cookies on geocaching.com and opencaching.de and is therefore a third-party cookie.'
                               + '<br>With this option, the cookies are not set via the geocaching.com and opencaching.de '
                               + 'pages, but in a pop-up window so that you can continue to use "Send to c:geo".<br>'
-                              + '<b>Attention: Sending multiple Caches does not work on the search page </b>'
                               + '(https://www.geocaching.com/play/search)';
 
     function getSettingsHTML() {
