@@ -130,7 +130,7 @@ function s2cgGCMain() {
             return;
         }
         var GCCode = $(field).html().match(/GC[A-Z0-9]{1,6}/)[0];
-        if ($('s2cg-' + GCCode)[0]) {
+        if ($('#s2cg-' + GCCode)[0]) {
             return;
         }
 
@@ -321,7 +321,7 @@ function s2cgGCMain() {
             if ($('.cache-preview-action-menu')[0]) {
                 var GCCode = $('.cache-metadata-code').html();
                 // Return when a button with the GCCode already exist
-                if ($('s2cg-' + GCCode)[0]) {
+                if ($('#s2cg-' + GCCode)[0]) {
                     return;
                 }
                 // Remove button when the GCCode has change
