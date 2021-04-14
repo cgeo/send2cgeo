@@ -317,23 +317,37 @@ function s2cgGCMain() {
 
     // Send to c:geo on seachmap (new map)
     if (document.location.href.match(/\.com\/play\/map/)) {
-        function addButton() {
+        function addButtonPopup() {
+            window.setTimeout(
+                function () {
+                    if ($('.leaflet-popup-content')[0]) {
+                        var GCCode = $('.cache-action-open-cache')[0].href.match(/GC[A-Z0-9]{1,6}/);
+                        // Remove button when the GCCode has change
+                        removeIfAlreadyExists('.cache-action-menu-view ul li.s2cg', $('.cache-action-menu-view ul li.s2cg'));
+                        $('.cache-action-menu-view ul').append('<li class="s2cg"></li>');
+                        buildButton(GCCode, $('.cache-action-menu-view ul li.s2cg'), '0', 'hidden');
+                        $('.cache-action-menu-view ul li.s2cg a').append('<span>Send to c:geo</span>');
+                    }
+                },
+                100
+            );
+            
+        }
+
+        function addButtonSidebar() {
             if ($('.cache-preview-action-menu')[0]) {
                 var GCCode = $('.cache-metadata-code').html();
-                // Return when a button with the GCCode already exist
-                if ($('#s2cg-' + GCCode)[0]) {
-                    return;
-                }
                 // Remove button when the GCCode has change
-                removeIfAlreadyExists('.cache-preview-action-menu ul li.s2cg', $('li.s2cg'));
+                removeIfAlreadyExists('.cache-preview-action-menu ul li.s2cg', $('.cache-preview-action-menu ul li.s2cg'));
                 $('.cache-preview-action-menu ul').append('<li class="s2cg"></li>');
-                buildButton(GCCode, $('li.s2cg'), '25px', 'action-icon');
-                $('li.s2cg a').append('<span>Send to c:geo</span>');
+                buildButton(GCCode, $('.cache-preview-action-menu ul li.s2cg'), '25px', 'action-icon');
+                $('.cache-preview-action-menu ul li.s2cg a').append('<span>Send to c:geo</span>');
             }
         }
 
         // observer callback for checking existence of sidebar
         var cb_body = function(mutationsList, observer) {
+            addButtonPopup();
             if ($('div#sidebar')[0] && !$('.s2cg_sidebar_observer')[0]) {
                 $('div#sidebar').addClass('s2cg_sidebar_observer');
                 // start observing sidebar for switches between search list and cache details view
@@ -350,7 +364,7 @@ function s2cgGCMain() {
         var cb_sidebar = function(mutationsList, observer) {
             observer_sidebar.disconnect();
 
-            addButton()
+            addButtonSidebar()
 
             var target_sidebar = $('div#sidebar')[0];
             var config_sidebar = {
