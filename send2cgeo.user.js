@@ -99,31 +99,6 @@ function isUseWithoutThirdPartyCookies() {
 }
 
 function s2cgGCMain() {
-    // check for premium membership (parts of the page content are different)
-    function isPremium() {
-        var premium;
-        if (document.getElementsByClassName('li-membership').length) {
-            premium = document.getElementsByClassName('li-membership')[0];
-        } else if (document.getElementsByClassName('li-upgrade').length) {
-            premium = document.getElementsByClassName('li-upgrade')[0];
-        } else {
-            premium = true;
-        }
-
-        // premium has either an empty <li class="li-upgrade">
-        // or none of li-membership / li-upgrade present
-        if (premium !== true && premium.children.length) {
-            // in case GC.com changes the content,
-            // it still has to contain only "Upgrade" string
-            if (premium.children[0].getAttribute('data-event-label') == 'Upgrade CTA') {
-                premium = false;
-            }
-        } else {
-            premium = true;
-        }
-        return premium;
-    }
-
     // this adds a column with send2cgeo button in search results table
     function addSend2cgeoColumn(field) {
         if (field == 0) {
@@ -475,14 +450,9 @@ function s2cgGCMain() {
 
         // Send2cgeo column header for func addSend2cgeoColumn
         var S2CGHeader = '<th class="mobile-show"><a class="outbound-link">Send to c:geo</a></th>';
-        if (isPremium()) {
-            $("#searchResultsTable th").first().after(S2CGHeader);
-            $("#searchResultsTable col").first().after('<col></col>');
-        } else {
-            $("#searchResultsTable th").first().before(S2CGHeader);
-            $("#searchResultsTable col").first().before('<col></col>');
-            $('head').append('<style type="text/css">tr[data-premium] td + td {padding: 0 !important;}</style>');
-        }
+        $("#searchResultsTable .cache-primary-details-th").before(S2CGHeader);
+        $("#searchResultsTable .col-primary").before('<col></col>');
+        $('head').append('<style type="text/css">tr[data-premium] td + td {padding-top: 0 !important;}</style>');
 
         var caches = $(".cache-details");
         caches.each(addSend2cgeoColumn);
