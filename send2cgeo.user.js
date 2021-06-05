@@ -322,7 +322,10 @@ function s2cgGCMain() {
 
         // observer callback for checking existence of sidebar
         var cb_body = function(mutationsList, observer) {
+            observer_body.disconnect();
+
             addButtonPopup();
+
             if ($('div#sidebar')[0] && !$('.s2cg_sidebar_observer')[0]) {
                 $('div#sidebar').addClass('s2cg_sidebar_observer');
                 // start observing sidebar for switches between search list and cache details view
@@ -333,6 +336,8 @@ function s2cgGCMain() {
                 };
                 observer_sidebar.observe(target_sidebar, config_sidebar);
             }
+
+            observer_body.observe(target_body, config_body);
         }
 
         // observer callback when sidebar switches between search list and cache details view
@@ -597,7 +602,7 @@ function s2cgGCMain() {
 
 // This function add the send2cgeo buttons on opencaching.de
     // Send to c:geo on viewcache
-    if(document.location.href.match(/\.de\/viewcache\.php/)) {
+    if (document.location.href.match(/\.de\/viewcache\.php/)) {
         var oc = document.getElementsByClassName('exportlist')[0].parentNode.parentNode;
         var occode = document.title.match(/OC[A-Z0-9]{1,6}/)[0];
 
