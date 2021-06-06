@@ -297,9 +297,10 @@ function s2cgGCMain() {
                 function () {
                     if ($('.leaflet-popup-content')[0]) {
                         var GCCode = $('.cache-action-open-cache')[0].href.match(/GC[A-Z0-9]{1,6}/);
+                        if ($('#s2cg_' + GCCode)[0]) return;
                         // Remove button when the GCCode has change
                         removeIfAlreadyExists('.cache-action-menu-view ul li.s2cg', $('.cache-action-menu-view ul li.s2cg'));
-                        $('.cache-action-menu-view ul').append('<li class="s2cg"></li>');
+                        $('.cache-action-menu-view ul').append('<li id="s2cg_' + GCCode + '" class="s2cg"></li>');
                         buildButton(GCCode, $('.cache-action-menu-view ul li.s2cg'), '0', 'hidden');
                         $('.cache-action-menu-view ul li.s2cg a').append('<span>Send to c:geo</span>');
                     }
@@ -313,8 +314,9 @@ function s2cgGCMain() {
             if ($('.cache-preview-action-menu')[0]) {
                 var GCCode = $('.cache-metadata-code').html();
                 // Remove button when the GCCode has change
+                if ($('#s2cg_' + GCCode)[0]) return;
                 removeIfAlreadyExists('.cache-preview-action-menu ul li.s2cg', $('.cache-preview-action-menu ul li.s2cg'));
-                $('.cache-preview-action-menu ul').append('<li class="s2cg"></li>');
+                $('.cache-preview-action-menu ul').append('<li id="s2cg_' + GCCode + '" class="s2cg"></li>');
                 buildButton(GCCode, $('.cache-preview-action-menu ul li.s2cg'), '25px', 'action-icon');
                 $('.cache-preview-action-menu ul li.s2cg a').append('<span>Send to c:geo</span>');
             }
