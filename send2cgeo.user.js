@@ -474,7 +474,7 @@ function s2cgGCMain() {
             }
 
             removeIfAlreadyExists('.header-s2cg', $('.header-s2cg'));
-            $('.geocache-table thead th.header-geocache-name').before('<th class="header-s2cg"><img src="https://www.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" /></th>');
+            $('.geocache-table thead th:nth-child(2)').before('<th class="header-s2cg"><img src="https://www.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" /></th>');
 
             $('.geocache-table tbody tr').each(
                 function() {
@@ -523,7 +523,7 @@ function s2cgGCMain() {
             observer.disconnect();
 
             removeIfAlreadyExists('.header-s2cg', $('.header-s2cg'));
-            $('.geocache-table thead th.header-name').before('<th class="header-s2cg"><img src="https://www.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" /></th>');
+            $('.geocache-table thead th').first().before('<th class="header-s2cg"><img src="https://www.cgeo.org/send2cgeo.png" title="Send to c:geo" height="20px" /></th>');
 
             $('.geocache-table tbody tr').each(
                 function() {
