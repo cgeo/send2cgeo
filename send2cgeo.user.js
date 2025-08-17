@@ -630,7 +630,7 @@ function s2cgGCMain() {
         // geocaching.com
         // new Dashboard
         if (document.location.href.match(/\.com\/account\/dashboard/)) {
-            $('.bio-meta').append('<span style="display:block;">Send to c:geo <a id="s2cg_open_sendList" href="javascript:void(0)">Send List</a></span>');
+            $('.bio-meta:first').append('<span style="display:block;">Send to c:geo <a id="s2cg_open_sendList" href="javascript:void(0)">Send List</a></span>');
         }
         // old Dashboard
         if (document.location.href.match(/\.com\/my\/default.aspx/)) {
