@@ -234,14 +234,22 @@ function s2cgGCMain() {
         function addButtonPopup() {
             window.setTimeout(
                 function () {
-                    if ($('.leaflet-popup-content')[0]) {
-                        var GCCode = $('.cache-action-open-cache')[0].href.match(/GC[A-Z0-9]{1,6}/);
+                    let POPUP_BASE = '[data-floating-ui-portal]';
+                    let POPUP_ITEM = `${POPUP_BASE} ul li`;
+                    let POPUP_LINK = `${POPUP_ITEM} > a`;
+                    let POPUP_S2CG = `${POPUP_ITEM}.s2cg`;
+                    let POPUP_S2CG_LINK = `${POPUP_BASE} ul li.s2cg > a`;
+                    if ($(`${POPUP_BASE}`)[0]) {
+                        var GCCode = $(POPUP_LINK)[0].href.match(/GC[A-Z0-9]{1,6}/);
+                        var style = $(POPUP_LINK).attr('class');
+                        console.log(style);
                         if ($('#s2cg_' + GCCode)[0]) return;
                         // Remove button when the GCCode has change
-                        removeIfAlreadyExists('.cache-action-menu-view ul li.s2cg', $('.cache-action-menu-view ul li.s2cg'));
-                        $('.cache-action-menu-view ul').append('<li id="s2cg_' + GCCode + '" class="s2cg"></li>');
-                        buildButton(GCCode, $('.cache-action-menu-view ul li.s2cg'), '0', 'hidden');
-                        $('.cache-action-menu-view ul li.s2cg a').append('<span>Send to c:geo</span>');
+                        removeIfAlreadyExists(POPUP_S2CG, $(POPUP_S2CG));
+                        $(POPUP_BASE + ' ul').append('<li id="s2cg_' + GCCode + '" class="s2cg"></li>');
+                        buildButton(GCCode, $(POPUP_S2CG), '0', 'hidden');
+                        $(POPUP_S2CG_LINK).append('<span>Send to c:geo</span>');
+                        $(POPUP_S2CG_LINK).attr('class', style);
                     }
                 },
                 100
