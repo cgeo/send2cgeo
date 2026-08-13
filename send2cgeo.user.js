@@ -412,7 +412,7 @@ function s2cgGCMain() {
             + '<img src="https://www.cgeo.org/send2cgeo.png" title="Send to c:geo" height="16px" />'
             + '<span>Send to c:geo</span></a></dt>';
 
-        $("#Download dd:last").append(html2);
+        $("#Download").append(html2);
     }
 
     // Send to c:geo on recentlyviewed and nearest list
