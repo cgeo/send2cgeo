@@ -218,8 +218,16 @@ function s2cgGCMain() {
     // Send to c:geo on browsemap (old map)
     if (document.location.href.match(/\.com\/map/)) {
         var template = $("#cacheDetailsTemplate").html();
+
+        // Insert css class
+        var css_class = 'flex gap-2 flex-wrap ' // keep the last space
+        var css_pos = template.indexOf('links border-t border-[#adafb2] py-2 text-[#939597]');
+
+        template = template.substring(0, css_pos) + css_class + template.substring(css_pos, template.length);
+
+        // Insert html
         var html = '<a href="javascript:void(0);" onclick="window.s2geo(\'{{=gc}}\'); return false;">'
-            + '<img height="16px" src="https://www.cgeo.org/send2cgeo.png" />'
+            + '<img height="16px" class="mr-1.5 align-middle" src="https://www.cgeo.org/send2cgeo.png" />'
             + '<span>Send to c:geo</span></a>';
 
         var searchpos = template.indexOf('/images/icons/16/write_log.png');
